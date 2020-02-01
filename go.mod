@@ -10,6 +10,7 @@ require (
 	github.com/google/go-cmp v0.3.1
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f
 	github.com/pkg/errors v0.8.1
+	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271
 	helm.sh/helm/v3 v3.0.3
 	k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833 // indirect
 	k8s.io/apimachinery v0.16.5-beta.1 // indirect
