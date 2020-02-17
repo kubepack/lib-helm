@@ -14,6 +14,7 @@ require (
 	helm.sh/helm/v3 v3.0.3
 	k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833 // indirect
 	k8s.io/apimachinery v0.16.5-beta.1 // indirect
+	k8s.io/cli-runtime v0.0.0-20191114110141-0a35778df828
 	k8s.io/kubectl v0.0.0-20191114113550-6123e1c827f7 // indirect
 	sigs.k8s.io/yaml v1.1.0
 )
@@ -36,6 +37,7 @@ replace (
 	github.com/docker/docker => github.com/docker/docker v0.7.3-0.20190327010347-be7ac8be2ae0
 	github.com/prometheus/client_golang => github.com/prometheus/client_golang v0.9.2
 	google.golang.org/api => google.golang.org/api v0.6.1-0.20190607001116-5213b8090861
+	helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.0.3-0.20200119202455-afb1ef54d569
 	k8s.io/api => k8s.io/api v0.0.0-20191114100352-16d7abae0d2a
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833
 	k8s.io/apimachinery => github.com/kmodules/apimachinery v0.0.0-20191119091232-0553326db082
