@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/Masterminds/semver/v3 v3.0.3
 	github.com/PuerkitoBio/purell v1.1.1
+	github.com/evanphx/json-patch v4.5.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.0.2
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.3.1
@@ -13,7 +14,7 @@ require (
 	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271
 	helm.sh/helm/v3 v3.0.3
 	k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833 // indirect
-	k8s.io/apimachinery v0.16.5-beta.1 // indirect
+	k8s.io/apimachinery v0.16.5-beta.1
 	k8s.io/cli-runtime v0.0.0-20191114110141-0a35778df828
 	k8s.io/kubectl v0.0.0-20191114113550-6123e1c827f7 // indirect
 	sigs.k8s.io/yaml v1.1.0
