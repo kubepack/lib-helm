@@ -19,7 +19,7 @@ type UninstallOptions struct {
 type Uninstaller struct {
 	cfg *action.Configuration
 
-	opts        *UninstallOptions
+	opts        UninstallOptions
 	releaseName string
 	result      *release.UninstallReleaseResponse
 }
@@ -42,7 +42,7 @@ func NewUninstallerForConfig(cfg *action.Configuration) *Uninstaller {
 	}
 }
 
-func (x *Uninstaller) WithOptions(opts *UninstallOptions) *Uninstaller {
+func (x *Uninstaller) WithOptions(opts UninstallOptions) *Uninstaller {
 	x.opts = opts
 	return x
 }

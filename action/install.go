@@ -2,6 +2,7 @@ package action
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,9 +33,9 @@ type InstallOptions struct {
 }
 
 type Installer struct {
-	cfg  *action.Configuration
-	opts *InstallOptions
+	cfg *action.Configuration
 
+	opts   InstallOptions
 	reg    *repo.Registry
 	result *release.Release
 }
@@ -57,7 +58,7 @@ func NewInstallerForConfig(cfg *action.Configuration) *Installer {
 	}
 }
 
-func (x *Installer) WithOptions(opts *InstallOptions) *Installer {
+func (x *Installer) WithOptions(opts InstallOptions) *Installer {
 	x.opts = opts
 	return x
 }
@@ -71,6 +72,10 @@ func (x *Installer) Run() (*release.Release, error) {
 	if x.opts.Version == "" && x.opts.Devel {
 		debug("setting version to >0.0.0-0")
 		x.opts.Version = ">0.0.0-0"
+	}
+
+	if x.reg == nil {
+		return nil, errors.New("x.reg is not set")
 	}
 
 	chrt, err := x.reg.GetChart(x.opts.ChartURL, x.opts.ChartName, x.opts.Version)

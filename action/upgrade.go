@@ -2,6 +2,7 @@ package action
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -36,9 +37,9 @@ type UpgradeOptions struct {
 }
 
 type Upgrader struct {
-	cfg  *action.Configuration
-	opts *UpgradeOptions
+	cfg *action.Configuration
 
+	opts        UpgradeOptions
 	reg         *repo.Registry
 	releaseName string
 	result      *release.Release
@@ -62,7 +63,7 @@ func NewUpgraderForConfig(cfg *action.Configuration) *Upgrader {
 	}
 }
 
-func (x *Upgrader) WithOptions(opts *UpgradeOptions) *Upgrader {
+func (x *Upgrader) WithOptions(opts UpgradeOptions) *Upgrader {
 	x.opts = opts
 	return x
 }
@@ -81,6 +82,10 @@ func (x *Upgrader) Run() (*release.Release, error) {
 	if x.opts.Version == "" && x.opts.Devel {
 		debug("setting version to >0.0.0-0")
 		x.opts.Version = ">0.0.0-0"
+	}
+
+	if x.reg == nil {
+		return nil, errors.New("x.reg is not set")
 	}
 
 	chrt, err := x.reg.GetChart(x.opts.ChartURL, x.opts.ChartName, x.opts.Version)

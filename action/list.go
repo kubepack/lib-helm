@@ -5,7 +5,6 @@ import (
 	"helm.sh/helm/v3/pkg/chartutil"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"kubepack.dev/lib-helm/repo"
 )
 
 type ListOptions struct {
@@ -27,10 +26,9 @@ type ListOptions struct {
 }
 
 type Lister struct {
-	cfg  *action.Configuration
-	opts *ListOptions
+	cfg *action.Configuration
 
-	reg    *repo.Registry
+	opts   ListOptions
 	result []*release.Release
 }
 
@@ -52,13 +50,8 @@ func NewListerForConfig(cfg *action.Configuration) *Lister {
 	}
 }
 
-func (x *Lister) WithOptions(opts *ListOptions) *Lister {
+func (x *Lister) WithOptions(opts ListOptions) *Lister {
 	x.opts = opts
-	return x
-}
-
-func (x *Lister) WithRegistry(reg *repo.Registry) *Lister {
-	x.reg = reg
 	return x
 }
 
