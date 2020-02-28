@@ -43,7 +43,7 @@ endif
 ### These variables should not need tweaking.
 ###
 
-SRC_DIRS := *.go chart downloader getter hack internal repo test
+SRC_DIRS := *.go action chart downloader getter hack internal repo test
 
 DOCKER_PLATFORMS := linux/amd64 linux/arm linux/arm64
 BIN_PLATFORMS    := $(DOCKER_PLATFORMS)
