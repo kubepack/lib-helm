@@ -17,6 +17,7 @@ package getter
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -104,8 +105,12 @@ func TestDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got.String() != expect {
-		t.Errorf("Expected %q, got %q", expect, got.String())
+	data, err := ioutil.ReadAll(got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != expect {
+		t.Errorf("Expected %q, got %q", expect, string(data))
 	}
 
 	// test with http server
@@ -136,8 +141,12 @@ func TestDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got.String() != expect {
-		t.Errorf("Expected %q, got %q", expect, got.String())
+	data, err = ioutil.ReadAll(got)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(data) != expect {
+		t.Errorf("Expected %q, got %q", expect, string(data))
 	}
 }
 

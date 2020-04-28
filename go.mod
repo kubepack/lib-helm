@@ -8,7 +8,6 @@ require (
 	github.com/evanphx/json-patch v4.5.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.0.2
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/go-cmp v0.3.1
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f
 	github.com/pkg/errors v0.8.1
 	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271
