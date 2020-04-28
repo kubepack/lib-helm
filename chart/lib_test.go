@@ -7,15 +7,16 @@ import (
 )
 
 // https://helm.sh/docs/intro/using_helm/#the-format-and-limitations-of---set
-func TestGetChangedValues1(t *testing.T) {
+func TestGetChangedValues(t *testing.T) {
 	type args struct {
 		original map[string]interface{}
 		modified map[string]interface{}
 	}
 	tests := []struct {
-		name string
-		args args
-		want []string
+		name    string
+		args    args
+		want    []string
+		wantErr bool
 	}{
 		{
 			name: "single key of simple value",
@@ -76,6 +77,32 @@ func TestGetChangedValues1(t *testing.T) {
 			},
 			want: []string{
 				"name={a, b, c}",
+			},
+		},
+		{
+			name: "nested array",
+			args: args{
+				original: map[string]interface{}{
+					"servers": []interface{}{},
+				},
+				modified: map[string]interface{}{
+					"servers": []interface{}{
+						map[string]interface{}{
+							"port": []interface{}{
+								80,
+							},
+							"host": []interface{}{
+								"example",
+							},
+							"name": "nginx",
+						},
+					},
+				},
+			},
+			want: []string{
+				"servers[0].port={80}",
+				"servers[0].host={example}",
+				"servers[0].name=nginx",
 			},
 		},
 		{
@@ -159,9 +186,13 @@ func TestGetChangedValues1(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetChangedValues(tt.args.original, tt.args.modified)
+			got, err := GetChangedValues(tt.args.original, tt.args.modified)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetChangedValues() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
 			if !sets.NewString(got...).Equal(sets.NewString(tt.want...)) {
-				t.Errorf("GetChangedValues() = %v, want %v", got, tt.want)
+				t.Errorf("GetChangedValues() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

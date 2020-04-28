@@ -9,13 +9,16 @@ import (
 	"strings"
 )
 
-func GetChangedValues(original map[string]interface{}, modified map[string]interface{}) []string {
-	cmds := getChangedValues(original, modified, "", nil)
+func GetChangedValues(original, modified map[string]interface{}) ([]string, error) {
+	cmds, err := getChangedValues(original, modified, "", nil)
+	if err != nil {
+		return nil, err
+	}
 	sort.Strings(cmds)
-	return cmds
+	return cmds, nil
 }
 
-func getChangedValues(original map[string]interface{}, modified map[string]interface{}, prefix string, cmds []string) []string {
+func getChangedValues(original, modified map[string]interface{}, prefix string, cmds []string) ([]string, error) {
 	for k, v := range modified {
 		curKey := ""
 		if prefix == "" {
@@ -30,7 +33,11 @@ func getChangedValues(original map[string]interface{}, modified map[string]inter
 			if !ok {
 				oVal = map[string]interface{}{}
 			}
-			cmds = append(cmds, getChangedValues(oVal, val, curKey, cmds)...)
+			next, err := getChangedValues(oVal, val, curKey, cmds)
+			if err != nil {
+				return nil, err
+			}
+			cmds = append(cmds, next...)
 		case []interface{}:
 			if !reflect.DeepEqual(v, original[k]) {
 				if len(val) == 0 {
@@ -41,7 +48,7 @@ func getChangedValues(original map[string]interface{}, modified map[string]inter
 				if isSimpleArray(val) {
 					s, err := PrintArray(val)
 					if err != nil {
-						panic(err)
+						return nil, fmt.Errorf("failed to print simple array %v, reason: %v", v, err)
 					}
 					cmds = append(cmds, fmt.Sprintf("%s=%s", curKey, s))
 					continue
@@ -50,24 +57,32 @@ func getChangedValues(original map[string]interface{}, modified map[string]inter
 				for i, element := range val {
 					em, ok := element.(map[string]interface{})
 					if !ok {
-						panic("element is not a map")
+						return nil, fmt.Errorf("%s[%d] element is not a map", curKey, i)
 					}
-					cmds = append(cmds, getChangedValues(map[string]interface{}{}, em, fmt.Sprintf("%s[%d]", curKey, i), cmds)...)
+					next, err := getChangedValues(map[string]interface{}{}, em, fmt.Sprintf("%s[%d]", curKey, i), cmds)
+					if err != nil {
+						return nil, err
+					}
+					cmds = append(cmds, next...)
 				}
 			}
 		case string:
-			cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, escapeValue(val)))
-		default:
 			if !reflect.DeepEqual(original[k], val) {
-				data, err := json.Marshal(val)
-				if err != nil {
-					panic(err)
-				}
-				cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, string(data)))
+				cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, escapeValue(val)))
 			}
+		case int8, uint8, int16, uint16, int32, uint32, int64, uint64, int, uint, float32, float64, bool, json.Number:
+			if !reflect.DeepEqual(original[k], val) {
+				cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, val))
+			}
+		case nil:
+			if !reflect.DeepEqual(original[k], val) {
+				cmds = append(cmds, fmt.Sprintf("%s=null", curKey))
+			}
+		default:
+			return nil, fmt.Errorf("unknown type %v with value %v", reflect.TypeOf(v), v)
 		}
 	}
-	return cmds
+	return cmds, nil
 }
 
 // kubernetes.io/role becomes "kubernetes\.io/role"
@@ -107,14 +122,19 @@ func PrintArray(a []interface{}) (string, error) {
 			if err != nil {
 				return "", err
 			}
-		case int8, uint8, int16, uint16, int32, uint32, int64, uint64, int, uint, float32, float64, bool, nil, json.Number:
+		case int8, uint8, int16, uint16, int32, uint32, int64, uint64, int, uint, float32, float64, bool, json.Number:
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			err := json.NewEncoder(&buf).Encode(v)
+			_, err := fmt.Fprint(&buf, v)
 			if err != nil {
 				return "", err
 			}
+		case nil:
+			if i > 0 {
+				buf.WriteString(", ")
+			}
+			buf.WriteString("null")
 		default:
 			return "", fmt.Errorf("[%d] holds a complex type %v", i, reflect.TypeOf(a[i]))
 		}
