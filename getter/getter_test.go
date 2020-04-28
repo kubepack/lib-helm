@@ -19,8 +19,6 @@ import (
 	"testing"
 )
 
-const pluginDir = "testdata/plugins"
-
 func TestProvider(t *testing.T) {
 	p := Provider{
 		[]string{"one", "three"},
@@ -50,22 +48,8 @@ func TestProviders(t *testing.T) {
 	}
 }
 
-func TestAll(t *testing.T) {
-	all := All()
-	if len(all) != 3 {
-		t.Errorf("expected 3 providers (default plus two plugins), got %d", len(all))
-	}
-
-	if _, err := all.ByScheme("test2"); err != nil {
-		t.Error(err)
-	}
-}
-
 func TestByScheme(t *testing.T) {
 	g := All()
-	if _, err := g.ByScheme("test"); err != nil {
-		t.Error(err)
-	}
 	if _, err := g.ByScheme("https"); err != nil {
 		t.Error(err)
 	}
