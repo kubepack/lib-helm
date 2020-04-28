@@ -151,7 +151,7 @@ func TestDownload(t *testing.T) {
 }
 
 func TestDownloadTLS(t *testing.T) {
-	cd := "../../testdata"
+	cd := "../testdata"
 	ca, pub, priv := filepath.Join(cd, "rootca.crt"), filepath.Join(cd, "crt.pem"), filepath.Join(cd, "key.pem")
 
 	tlsSrv := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
@@ -159,7 +159,7 @@ func TestDownloadTLS(t *testing.T) {
 	if err != nil {
 		t.Fatal(errors.Wrap(err, "can't create TLS config for client"))
 	}
-	tlsConf.BuildNameToCertificate()
+	// tlsConf.BuildNameToCertificate()
 	tlsConf.ServerName = "helm.sh"
 	tlsSrv.TLS = tlsConf
 	tlsSrv.StartTLS()

@@ -7,9 +7,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-
-	"github.com/pkg/errors"
-	"helm.sh/helm/v3/pkg/chart"
 )
 
 func GetChangedValues(original map[string]interface{}, modified map[string]interface{}) []string {
@@ -61,7 +58,7 @@ func getChangedValues(original map[string]interface{}, modified map[string]inter
 		case string:
 			cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, escapeValue(val)))
 		default:
-			if !reflect.DeepEqual(original[k], k) {
+			if !reflect.DeepEqual(original[k], val) {
 				data, err := json.Marshal(val)
 				if err != nil {
 					panic(err)
@@ -73,21 +70,9 @@ func getChangedValues(original map[string]interface{}, modified map[string]inter
 	return cmds
 }
 
-func isZeroOrNil(x interface{}) bool {
-	return x == nil || reflect.DeepEqual(x, reflect.Zero(reflect.TypeOf(x)).Interface())
-}
-
-func isChartInstallable(ch *chart.Chart) (bool, error) {
-	switch ch.Metadata.Type {
-	case "", "application":
-		return true, nil
-	}
-	return false, errors.Errorf("%s charts are not installable", ch.Metadata.Type)
-}
-
 // kubernetes.io/role becomes "kubernetes\.io/role"
 func escapeKey(s string) string {
-	if strings.IndexRune(s, '.') == -1 {
+	if !strings.ContainsRune(s, '.') {
 		return s
 	}
 	return `"` + strings.ReplaceAll(strings.ReplaceAll(s, `\`, `\\`), `.`, `\.`) + `"`
