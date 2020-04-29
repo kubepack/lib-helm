@@ -164,7 +164,7 @@ func TestGetChangedValues(t *testing.T) {
 				},
 			},
 			want: []string{
-				`name=value1\,value2`,
+				`name='value1\,value2'`,
 			},
 		},
 		{
@@ -180,7 +180,7 @@ func TestGetChangedValues(t *testing.T) {
 				},
 			},
 			want: []string{
-				`nodeSelector."kubernetes\.io/role"=master`,
+				`nodeSelector.'kubernetes\.io/role'=master`,
 			},
 		},
 	}
