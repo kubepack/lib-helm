@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/Masterminds/semver/v3 v3.0.3
 	github.com/PuerkitoBio/purell v1.1.1
+	github.com/alessio/shellescape v1.2.2
 	github.com/evanphx/json-patch v4.5.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.0.2
 	github.com/gomodule/redigo v2.0.0+incompatible
