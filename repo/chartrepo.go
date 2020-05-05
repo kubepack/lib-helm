@@ -21,7 +21,9 @@ import (
 	"fmt"
 	"net/url"
 	"path"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/gregjones/httpcache"
 	"github.com/pkg/errors"
@@ -106,6 +108,35 @@ func (r *ChartRepository) Load() error {
 	return nil
 }
 
+func (r *ChartRepository) ListCharts() []string {
+	charts := []string{}
+	for name, varsions := range r.IndexFile.Entries {
+		if varsions[0].Type == "" || varsions[0].Type == "application" {
+			charts = append(charts, name)
+		}
+	}
+	sort.Strings(charts)
+	return charts
+}
+
+func (r *ChartRepository) ListVersions(name string) []VersionView {
+	versions := []VersionView{}
+	for _, v := range r.IndexFile.Entries[name] {
+		if v.Removed {
+			continue
+		}
+		versions = append(versions, VersionView{
+			Version:     v.Version,
+			AppVersion:  v.AppVersion,
+			Deprecated:  v.Deprecated,
+			KubeVersion: v.KubeVersion,
+			Created:     v.Created,
+			Removed:     v.Removed,
+		})
+	}
+	return versions
+}
+
 // FindChartInAuthRepoURL finds chart in chart repository pointed by repoURL
 // without adding repo to repositories, like FindChartInRepoURL,
 // but it also receives credentials for the chart repository.
@@ -166,4 +197,18 @@ func ResolveReferenceURL(baseURL, refURL string) (string, error) {
 	// We need a trailing slash for ResolveReference to work, but make sure there isn't already one
 	parsedBaseURL.Path = strings.TrimSuffix(parsedBaseURL.Path, "/") + "/"
 	return parsedBaseURL.ResolveReference(parsedRefURL).String(), nil
+}
+
+// VersionView represents a chart version entry in the IndexFile
+type VersionView struct {
+	// A SemVer 2 conformant version string of the chart
+	Version string `json:"version,omitempty"`
+	// The version of the application enclosed inside of this chart.
+	AppVersion string `json:"appVersion,omitempty"`
+	// Whether or not this chart is deprecated
+	Deprecated bool `json:"deprecated,omitempty"`
+	// KubeVersion is a SemVer constraint specifying the version of Kubernetes required.
+	KubeVersion string    `json:"kubeVersion,omitempty"`
+	Created     time.Time `json:"created,omitempty"`
+	Removed     bool      `json:"removed,omitempty"`
 }
