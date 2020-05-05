@@ -25,8 +25,6 @@ import (
 
 	"github.com/gregjones/httpcache"
 	"github.com/pkg/errors"
-	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/provenance"
 	"kubepack.dev/lib-helm/getter"
 )
 
@@ -91,29 +89,20 @@ func (r *ChartRepository) DownloadIndexFile() (*bytes.Reader, error) {
 	)
 }
 
-// Index generates an index for the chart repository and writes an index.yaml file.
-func (r *ChartRepository) Index() error {
-	return r.generateIndex()
-}
-
-func (r *ChartRepository) generateIndex() error {
-	for _, path := range r.ChartPaths {
-		ch, err := loader.Load(path)
-		if err != nil {
-			return err
-		}
-
-		digest, err := provenance.DigestFile(path)
-		if err != nil {
-			return err
-		}
-
-		if !r.IndexFile.Has(ch.Name(), ch.Metadata.Version) {
-			r.IndexFile.Add(ch.Metadata, path, r.Config.URL, digest)
-		}
-		// TODO: If a chart exists, but has a different Digest, should we error?
+// Load loads the index for the chart repository
+func (r *ChartRepository) Load() error {
+	idx, err := r.DownloadIndexFile()
+	if err != nil {
+		return errors.Wrapf(err, "looks like %q is not a valid chart repository or cannot be reached", r.Config.URL)
 	}
-	r.IndexFile.SortEntries()
+
+	// Read the index file for the repository to get chart information and return chart URL
+	repoIndex, err := LoadIndexFile(idx)
+	if err != nil {
+		return err
+	}
+	r.IndexFile = repoIndex
+
 	return nil
 }
 
