@@ -34,6 +34,7 @@ require (
 	google.golang.org/genproto v0.0.0-20200603110839-e855014d5736 // indirect
 	google.golang.org/grpc v1.29.1 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200603094226-e3079894b1e8 // indirect
 	helm.sh/helm/v3 v3.2.1
 	k8s.io/apimachinery v0.18.9
 	k8s.io/cli-runtime v0.18.9
@@ -41,6 +42,8 @@ require (
 	rsc.io/letsencrypt v0.0.3 // indirect
 	sigs.k8s.io/yaml v1.2.0
 )
+
+replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.3.5-0.20201117014452-f6732bc03450
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
 
@@ -113,8 +116,6 @@ replace google.golang.org/api => google.golang.org/api v0.14.0
 replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20191115194625-c23dd37a84c9
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
-
-replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.3.5-0.20201117014452-f6732bc03450
 
 replace k8s.io/api => github.com/kmodules/api v0.18.10-0.20200922195318-d60fe725dea0
 
