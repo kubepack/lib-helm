@@ -18,17 +18,14 @@ require (
 	github.com/gomodule/redigo v1.8.1
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/googleapis/gnostic v0.4.0 // indirect
-	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.6 // indirect
 	github.com/onsi/gomega v1.8.1 // indirect
-	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.6.0 // indirect
 	github.com/spf13/cobra v1.1.1 // indirect
-	go.opencensus.io v0.22.2 // indirect
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
@@ -44,8 +41,6 @@ require (
 	rsc.io/letsencrypt v0.0.3 // indirect
 	sigs.k8s.io/yaml v1.2.0
 )
-
-replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.2.2-0.20200523120511-a86fc03a6a93
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
 
@@ -118,6 +113,8 @@ replace google.golang.org/api => google.golang.org/api v0.14.0
 replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20191115194625-c23dd37a84c9
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
+
+replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.3.5-0.20201117014452-f6732bc03450
 
 replace k8s.io/api => github.com/kmodules/api v0.18.10-0.20200922195318-d60fe725dea0
 
