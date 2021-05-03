@@ -6,9 +6,14 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/alessio/shellescape v1.2.2
+	github.com/docker/docker v20.10.2+incompatible // indirect
 	github.com/evanphx/json-patch v4.9.0+incompatible
+	github.com/fatih/color v1.10.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.2.0
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
+	github.com/onsi/gomega v1.8.1 // indirect
+	github.com/opencontainers/runc v1.0.0-rc93 // indirect
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
 	helm.sh/helm/v3 v3.2.1
@@ -16,6 +21,10 @@ require (
 	k8s.io/cli-runtime v0.21.0
 	sigs.k8s.io/yaml v1.2.0
 )
+
+replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
+
+replace github.com/Azure/go-autorest/autorest/azure/auth => github.com/Azure/go-autorest/autorest/azure/auth v0.2.0
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
 
@@ -31,8 +40,6 @@ replace cloud.google.com/go/pubsub => cloud.google.com/go/pubsub v1.2.0
 
 replace cloud.google.com/go/storage => cloud.google.com/go/storage v1.6.0
 
-replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
-
 replace github.com/Azure/azure-sdk-for-go => github.com/Azure/azure-sdk-for-go v43.0.0+incompatible
 
 replace github.com/Azure/go-ansiterm => github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
@@ -42,8 +49,6 @@ replace github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+inc
 replace github.com/Azure/go-autorest/autorest => github.com/Azure/go-autorest/autorest v0.11.12
 
 replace github.com/Azure/go-autorest/autorest/adal => github.com/Azure/go-autorest/autorest/adal v0.9.5
-
-replace github.com/Azure/go-autorest/autorest/azure/auth => github.com/Azure/go-autorest/autorest/azure/auth v0.2.0
 
 replace github.com/Azure/go-autorest/autorest/date => github.com/Azure/go-autorest/autorest/date v0.3.0
 
@@ -119,7 +124,7 @@ replace k8s.io/client-go => k8s.io/client-go v0.21.0
 
 replace k8s.io/component-base => k8s.io/component-base v0.21.0
 
-replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd
+replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
 
 replace k8s.io/kubernetes => github.com/kmodules/kubernetes v1.22.0-alpha.0.0.20210427080452-22d2e66bae50
 

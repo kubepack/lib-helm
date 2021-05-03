@@ -100,7 +100,7 @@ github.com/docker/distribution/registry/client/auth/challenge
 github.com/docker/distribution/registry/client/transport
 github.com/docker/distribution/registry/storage/cache
 github.com/docker/distribution/registry/storage/cache/memory
-# github.com/docker/docker v1.4.2-0.20200203170920-46ec8731fbce => github.com/moby/moby v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
+# github.com/docker/docker v20.10.2+incompatible => github.com/moby/moby v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
 github.com/docker/docker/api/types
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/container
@@ -142,7 +142,7 @@ github.com/docker/go-units
 github.com/evanphx/json-patch
 # github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d
 github.com/exponent-io/jsonpath
-# github.com/fatih/color v1.7.0
+# github.com/fatih/color v1.10.0
 github.com/fatih/color
 # github.com/gabriel-vasile/mimetype v1.2.0
 github.com/gabriel-vasile/mimetype
@@ -201,7 +201,7 @@ github.com/google/uuid
 github.com/googleapis/gnostic/compiler
 github.com/googleapis/gnostic/extensions
 github.com/googleapis/gnostic/openapiv2
-# github.com/gorilla/mux v1.7.3
+# github.com/gorilla/mux v1.8.0
 github.com/gorilla/mux
 # github.com/gosuri/uitable v0.0.4
 github.com/gosuri/uitable
@@ -238,9 +238,9 @@ github.com/liggitt/tabwriter
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
-# github.com/mattn/go-colorable v0.0.9
+# github.com/mattn/go-colorable v0.1.8
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.4
+# github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.7
 github.com/mattn/go-runewidth
@@ -271,7 +271,7 @@ github.com/opencontainers/go-digest
 # github.com/opencontainers/image-spec v1.0.1
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
-# github.com/opencontainers/runc v0.1.1
+# github.com/opencontainers/runc v1.0.0-rc93
 github.com/opencontainers/runc/libcontainer/user
 # github.com/peterbourgon/diskv v2.0.1+incompatible
 github.com/peterbourgon/diskv
@@ -717,7 +717,7 @@ k8s.io/client-go/util/workqueue
 k8s.io/component-base/version
 # k8s.io/klog/v2 v2.8.0
 k8s.io/klog/v2
-# k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7 => k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd
+# k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7 => k8s.io/kube-openapi v0.0.0-20210305001622-591a79e4bda7
 k8s.io/kube-openapi/pkg/util/proto
 k8s.io/kube-openapi/pkg/util/proto/validation
 # k8s.io/kubectl v0.21.0
