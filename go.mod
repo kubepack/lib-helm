@@ -1,26 +1,21 @@
 module kubepack.dev/lib-helm
 
-go 1.12
+go 1.15
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PuerkitoBio/purell v1.1.1
-	github.com/alessio/shellescape v1.2.2
-	github.com/docker/docker v20.10.2+incompatible // indirect
+	github.com/alessio/shellescape v1.4.1
 	github.com/evanphx/json-patch v4.9.0+incompatible
-	github.com/fatih/color v1.10.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.2.0
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
-	github.com/onsi/gomega v1.8.1 // indirect
-	github.com/opencontainers/runc v1.0.0-rc93 // indirect
 	github.com/pkg/errors v0.9.1
 	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
-	helm.sh/helm/v3 v3.2.1
+	helm.sh/helm/v3 v3.5.2
 	k8s.io/apimachinery v0.21.0
 	k8s.io/cli-runtime v0.21.0
-	k8s.io/utils v0.0.0-20210111153108-fddb29f9d009 // indirect
 	sigs.k8s.io/yaml v1.2.0
+
 )
 
 replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
