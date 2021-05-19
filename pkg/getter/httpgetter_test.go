@@ -26,8 +26,8 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
-	"kubepack.dev/lib-helm/internal/tlsutil"
-	"kubepack.dev/lib-helm/internal/version"
+	"kubepack.dev/lib-helm/pkg/internal/tlsutil"
+	"kubepack.dev/lib-helm/pkg/internal/version"
 )
 
 func TestHTTPGetter(t *testing.T) {
