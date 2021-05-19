@@ -1,39 +1,39 @@
 package action
 
 import (
-	"helm.sh/helm/v3/pkg/action"
+	ha "helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chartutil"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
 type ListOptions struct {
-	All          bool          `json:"all"`
-	Namespace    string        `json:"namespace"`
-	Sort         action.Sorter `json:"sort"`
-	ByDate       bool          `json:"byDate"`
-	SortReverse  bool          `json:"sortReverse"`
-	Limit        int           `json:"limit"`
-	Offset       int           `json:"offset"`
-	Filter       string        `json:"filter"`
-	Short        bool          `json:"short"`
-	Uninstalled  bool          `json:"uninstalled"`
-	Superseded   bool          `json:"superseded"`
-	Uninstalling bool          `json:"uninstalling"`
-	Deployed     bool          `json:"deployed"`
-	Failed       bool          `json:"failed"`
-	Pending      bool          `json:"pending"`
+	All          bool      `json:"all"`
+	Namespace    string    `json:"namespace"`
+	Sort         ha.Sorter `json:"sort"`
+	ByDate       bool      `json:"byDate"`
+	SortReverse  bool      `json:"sortReverse"`
+	Limit        int       `json:"limit"`
+	Offset       int       `json:"offset"`
+	Filter       string    `json:"filter"`
+	Short        bool      `json:"short"`
+	Uninstalled  bool      `json:"uninstalled"`
+	Superseded   bool      `json:"superseded"`
+	Uninstalling bool      `json:"uninstalling"`
+	Deployed     bool      `json:"deployed"`
+	Failed       bool      `json:"failed"`
+	Pending      bool      `json:"pending"`
 }
 
 type Lister struct {
-	cfg *action.Configuration
+	cfg *Configuration
 
 	opts   ListOptions
 	result []*release.Release
 }
 
 func NewLister(getter genericclioptions.RESTClientGetter, namespace string, helmDriver string) (*Lister, error) {
-	cfg := new(action.Configuration)
+	cfg := new(Configuration)
 	// TODO: Use secret driver for which namespace?
 	err := cfg.Init(getter, namespace, helmDriver, debug)
 	if err != nil {
@@ -44,7 +44,7 @@ func NewLister(getter genericclioptions.RESTClientGetter, namespace string, helm
 	return NewListerForConfig(cfg), nil
 }
 
-func NewListerForConfig(cfg *action.Configuration) *Lister {
+func NewListerForConfig(cfg *Configuration) *Lister {
 	return &Lister{
 		cfg: cfg,
 	}
@@ -56,7 +56,7 @@ func (x *Lister) WithOptions(opts ListOptions) *Lister {
 }
 
 func (x *Lister) Run() ([]*release.Release, error) {
-	cmd := action.NewList(x.cfg)
+	cmd := ha.NewList(&x.cfg.Configuration)
 	cmd.All = x.opts.All
 	cmd.AllNamespaces = x.opts.Namespace == ""
 	cmd.Sort = x.opts.Sort

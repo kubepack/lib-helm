@@ -3,7 +3,7 @@ package action
 import (
 	"time"
 
-	"helm.sh/helm/v3/pkg/action"
+	ha "helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chartutil"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -17,7 +17,7 @@ type UninstallOptions struct {
 }
 
 type Uninstaller struct {
-	cfg *action.Configuration
+	cfg *Configuration
 
 	opts        UninstallOptions
 	releaseName string
@@ -25,7 +25,7 @@ type Uninstaller struct {
 }
 
 func NewUninstaller(getter genericclioptions.RESTClientGetter, namespace string, helmDriver string) (*Uninstaller, error) {
-	cfg := new(action.Configuration)
+	cfg := new(Configuration)
 	// TODO: Use secret driver for which namespace?
 	err := cfg.Init(getter, namespace, helmDriver, debug)
 	if err != nil {
@@ -36,7 +36,7 @@ func NewUninstaller(getter genericclioptions.RESTClientGetter, namespace string,
 	return NewUninstallerForConfig(cfg), nil
 }
 
-func NewUninstallerForConfig(cfg *action.Configuration) *Uninstaller {
+func NewUninstallerForConfig(cfg *Configuration) *Uninstaller {
 	return &Uninstaller{
 		cfg: cfg,
 	}
@@ -53,7 +53,7 @@ func (x *Uninstaller) WithReleaseName(name string) *Uninstaller {
 }
 
 func (x *Uninstaller) Run() (*release.UninstallReleaseResponse, error) {
-	cmd := action.NewUninstall(x.cfg)
+	cmd := ha.NewUninstall(&x.cfg.Configuration)
 	cmd.DisableHooks = x.opts.DisableHooks
 	cmd.DryRun = x.opts.DryRun
 	cmd.KeepHistory = x.opts.KeepHistory
