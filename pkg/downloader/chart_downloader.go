@@ -21,7 +21,7 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
-	"kubepack.dev/lib-helm/getter"
+	"kubepack.dev/lib-helm/pkg/getter"
 )
 
 // VerificationStrategy describes a strategy for determining whether to verify a chart.

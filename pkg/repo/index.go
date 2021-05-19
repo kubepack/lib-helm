@@ -31,7 +31,7 @@ import (
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
 	"helm.sh/helm/v3/pkg/provenance"
-	"kubepack.dev/lib-helm/internal/urlutil"
+	"kubepack.dev/lib-helm/pkg/internal/urlutil"
 	"sigs.k8s.io/yaml"
 )
 

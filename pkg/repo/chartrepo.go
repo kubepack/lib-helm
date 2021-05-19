@@ -27,7 +27,7 @@ import (
 
 	"github.com/gregjones/httpcache"
 	"github.com/pkg/errors"
-	"kubepack.dev/lib-helm/getter"
+	"kubepack.dev/lib-helm/pkg/getter"
 )
 
 // Entry represents a collection of parameters for chart repository

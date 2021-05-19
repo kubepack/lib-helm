@@ -30,9 +30,9 @@ import (
 	"github.com/gregjones/httpcache/diskcache"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/helmpath"
-	"kubepack.dev/lib-helm/chart/loader"
-	"kubepack.dev/lib-helm/downloader"
-	"kubepack.dev/lib-helm/getter"
+	"kubepack.dev/lib-helm/pkg/chart/loader"
+	"kubepack.dev/lib-helm/pkg/downloader"
+	"kubepack.dev/lib-helm/pkg/getter"
 )
 
 type Registry struct {

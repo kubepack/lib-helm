@@ -25,9 +25,9 @@ import (
 	"github.com/gregjones/httpcache"
 	"github.com/pkg/errors"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
-	"kubepack.dev/lib-helm/internal/tlsutil"
-	"kubepack.dev/lib-helm/internal/urlutil"
-	"kubepack.dev/lib-helm/internal/version"
+	"kubepack.dev/lib-helm/pkg/internal/tlsutil"
+	"kubepack.dev/lib-helm/pkg/internal/urlutil"
+	"kubepack.dev/lib-helm/pkg/internal/version"
 )
 
 // HTTPGetter is the efault HTTP(/S) backend handler

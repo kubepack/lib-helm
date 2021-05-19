@@ -12,8 +12,8 @@ import (
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	libchart "kubepack.dev/lib-helm/chart"
-	"kubepack.dev/lib-helm/repo"
+	libchart "kubepack.dev/lib-helm/pkg/chart"
+	"kubepack.dev/lib-helm/pkg/repo"
 	"sigs.k8s.io/yaml"
 )
 
