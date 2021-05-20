@@ -1,6 +1,6 @@
 module kubepack.dev/lib-helm
 
-go 1.15
+go 1.16
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
@@ -8,19 +8,29 @@ require (
 	github.com/alessio/shellescape v1.4.1
 	github.com/evanphx/json-patch v4.9.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.2.0
+	github.com/gobuffalo/flect v0.2.2
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
+	github.com/imdario/mergo v0.3.11
 	github.com/pkg/errors v0.9.1
-	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	helm.sh/helm/v3 v3.5.2
+	k8s.io/api v0.21.0
+	k8s.io/apiextensions-apiserver v0.21.0
 	k8s.io/apimachinery v0.21.0
 	k8s.io/cli-runtime v0.21.0
+	k8s.io/client-go v0.21.0
+	k8s.io/klog/v2 v2.8.0
+	k8s.io/kubectl v0.21.0
+	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
+	kmodules.xyz/client-go v0.0.0-20210514054158-27e164b43474
+	kmodules.xyz/resource-metadata v0.5.5-0.20210518185031-147bfd9e841c
+	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
+	sigs.k8s.io/cli-utils v0.25.0
+	sigs.k8s.io/controller-runtime v0.9.0-beta.2
 	sigs.k8s.io/yaml v1.2.0
-
 )
 
-replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
-
-replace github.com/Azure/go-autorest/autorest/azure/auth => github.com/Azure/go-autorest/autorest/azure/auth v0.2.0
+replace github.com/go-macaron/binding => github.com/gomodules/binding v0.0.0-20200811095614-c752727d2156
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
 
@@ -106,7 +116,9 @@ replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20201110
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.27.1
 
-replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.1.0-rc.1.0.20210503022716-7e2d4913a125
+replace gopkg.in/yaml.v2 => gopkg.in/yaml.v2 v2.3.0
+
+replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.6.0-rc.1.0.20210518225915-c3e0ce48dd1b
 
 replace k8s.io/api => k8s.io/api v0.21.0
 
@@ -125,7 +137,5 @@ replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20210305001622-591a79e
 replace k8s.io/kubernetes => github.com/kmodules/kubernetes v1.22.0-alpha.0.0.20210427080452-22d2e66bae50
 
 replace k8s.io/utils => k8s.io/utils v0.0.0-20201110183641-67b214c5f920
-
-replace kmodules.xyz/resource-metadata => kmodules.xyz/resource-metadata v0.5.0
 
 replace sigs.k8s.io/application => github.com/kmodules/application v0.8.4-0.20210427030912-90eeee3bc4ad
