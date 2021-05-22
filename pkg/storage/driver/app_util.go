@@ -325,7 +325,7 @@ func EditorChartValueManifest(app *v1beta1.Application, mapper discovery.Resourc
 			// check ownership
 			// https://github.com/kubepack/helm/blob/ac-1.21.0/pkg/action/validate.go#L87-L92
 
-			annotationMap := app.GetAnnotations()
+			annotationMap := obj.GetAnnotations()
 			if v := annotationMap["meta.helm.sh/release-name"]; v != rls.Name {
 				continue
 			}
