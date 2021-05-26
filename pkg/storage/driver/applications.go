@@ -244,7 +244,7 @@ func (d *Applications) Create(_ string, rls *rspb.Release) error {
 func (d *Applications) Update(_ string, rls *rspb.Release) error {
 	// Bypass update call if called on originalRelease.
 	// Update() just updates the modifiedAt timestamp. This is not that important for our app driver.
-	if rls.Chart == nil {
+	if rls.Chart == nil || rls.Chart.Metadata == nil {
 		return nil
 	}
 
