@@ -22,15 +22,13 @@ require (
 	k8s.io/klog/v2 v2.8.0
 	k8s.io/kubectl v0.21.0
 	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
-	kmodules.xyz/client-go v0.0.0-20210514054158-27e164b43474
-	kmodules.xyz/resource-metadata v0.5.5-0.20210518185031-147bfd9e841c
+	kmodules.xyz/client-go v0.0.0-20210606080445-4a400cecb350
+	kmodules.xyz/resource-metadata v0.5.6-0.20210609095405-6352a05e3b49
 	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0-beta.2
 	sigs.k8s.io/yaml v1.2.0
 )
-
-replace github.com/go-macaron/binding => github.com/gomodules/binding v0.0.0-20200811095614-c752727d2156
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d
 
