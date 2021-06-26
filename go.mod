@@ -7,12 +7,12 @@ require (
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/alessio/shellescape v1.4.1
 	github.com/evanphx/json-patch v4.9.0+incompatible
-	github.com/gabriel-vasile/mimetype v1.2.0
+	github.com/gabriel-vasile/mimetype v1.3.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
 	github.com/imdario/mergo v0.3.11
 	github.com/pkg/errors v0.9.1
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/net v0.0.0-20210505024714-0287a6fb4125
 	helm.sh/helm/v3 v3.5.2
 	k8s.io/api v0.21.0
 	k8s.io/apiextensions-apiserver v0.21.0

@@ -20,15 +20,166 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
 
 	"helm.sh/helm/v3/pkg/chart"
+	"helm.sh/helm/v3/pkg/chartutil"
 )
+
+func TestLoadDir(t *testing.T) {
+	l, err := Loader("testdata/frobnitz")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyFrobnitz(t, c)
+	verifyChart(t, c)
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+}
+
+func TestLoadDirWithDevNull(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("test only works on unix systems with /dev/null present")
+	}
+
+	l, err := Loader("testdata/frobnitz_with_dev_null")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	if _, err := l.Load(); err == nil {
+		t.Errorf("packages with an irregular file (/dev/null) should not load")
+	}
+}
+
+func TestLoadDirWithSymlink(t *testing.T) {
+	sym := filepath.Join("..", "LICENSE")
+	link := filepath.Join("testdata", "frobnitz_with_symlink", "LICENSE")
+
+	if err := os.Symlink(sym, link); err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.Remove(link)
+
+	l, err := Loader("testdata/frobnitz_with_symlink")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyFrobnitz(t, c)
+	verifyChart(t, c)
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+}
+
+func TestBomTestData(t *testing.T) {
+	testFiles := []string{"frobnitz_with_bom/.helmignore", "frobnitz_with_bom/templates/template.tpl", "frobnitz_with_bom/Chart.yaml"}
+	for _, file := range testFiles {
+		data, err := ioutil.ReadFile("testdata/" + file)
+		if err != nil || !bytes.HasPrefix(data, utf8bom) {
+			t.Errorf("Test file has no BOM or is invalid: testdata/%s", file)
+		}
+	}
+
+	archive, err := ioutil.ReadFile("testdata/frobnitz_with_bom.tgz")
+	if err != nil {
+		t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
+	}
+	unzipped, err := gzip.NewReader(bytes.NewReader(archive))
+	if err != nil {
+		t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
+	}
+	defer unzipped.Close()
+	for _, testFile := range testFiles {
+		data := make([]byte, 3)
+		err := unzipped.Reset(bytes.NewReader(archive))
+		if err != nil {
+			t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
+		}
+		tr := tar.NewReader(unzipped)
+		for {
+			file, err := tr.Next()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
+			}
+			if file != nil && strings.EqualFold(file.Name, testFile) {
+				_, err := tr.Read(data)
+				if err != nil {
+					t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
+				} else {
+					break
+				}
+			}
+		}
+		if !bytes.Equal(data, utf8bom) {
+			t.Fatalf("Test file has no BOM or is invalid: frobnitz_with_bom.tgz/%s", testFile)
+		}
+	}
+}
+
+func TestLoadDirWithUTFBOM(t *testing.T) {
+	l, err := Loader("testdata/frobnitz_with_bom")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyFrobnitz(t, c)
+	verifyChart(t, c)
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+	verifyBomStripped(t, c.Files)
+}
+
+func TestLoadArchiveWithUTFBOM(t *testing.T) {
+	l, err := Loader("testdata/frobnitz_with_bom.tgz")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyFrobnitz(t, c)
+	verifyChart(t, c)
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+	verifyBomStripped(t, c.Files)
+}
+
+func TestLoadV1(t *testing.T) {
+	l, err := Loader("testdata/frobnitz.v1")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+}
 
 func TestLoadFileV1(t *testing.T) {
 	l, err := Loader("testdata/frobnitz.v1.tgz")
@@ -57,10 +208,36 @@ func TestLoadFile(t *testing.T) {
 	verifyDependencies(t, c)
 }
 
+func TestLoadFiles_BadCases(t *testing.T) {
+	for _, tt := range []struct {
+		name          string
+		bufferedFiles []*BufferedFile
+		expectError   string
+	}{
+		{
+			name: "These files contain only requirements.lock",
+			bufferedFiles: []*BufferedFile{
+				{
+					Name: "requirements.lock",
+					Data: []byte(""),
+				},
+			},
+			expectError: "validation: chart.metadata.apiVersion is required"},
+	} {
+		_, err := LoadFiles(tt.bufferedFiles)
+		if err == nil {
+			t.Fatal("expected error when load illegal files")
+		}
+		if !strings.Contains(err.Error(), tt.expectError) {
+			t.Errorf("Expected error to contain %q, got %q for %s", tt.expectError, err.Error(), tt.name)
+		}
+	}
+}
+
 func TestLoadFiles(t *testing.T) {
 	goodFiles := []*BufferedFile{
 		{
-			Name: "Chart.yaml",
+			Name: chartutil.ChartfileName,
 			Data: []byte(`apiVersion: v1
 name: frobnitz
 description: This is a frobnitz.
@@ -126,9 +303,85 @@ icon: https://example.com/64x64.png
 	if _, err = LoadFiles([]*BufferedFile{}); err == nil {
 		t.Fatal("Expected err to be non-nil")
 	}
-	if err.Error() != "validation: chart.metadata is required" {
+	if err.Error() != "Chart.yaml file is missing" {
 		t.Errorf("Expected chart metadata missing error, got '%s'", err.Error())
 	}
+}
+
+// Test the order of file loading. The Chart.yaml file needs to come first for
+// later comparison checks. See https://github.com/helm/helm/pull/8948
+func TestLoadFilesOrder(t *testing.T) {
+	goodFiles := []*BufferedFile{
+		{
+			Name: "requirements.yaml",
+			Data: []byte("dependencies:"),
+		},
+		{
+			Name: "values.yaml",
+			Data: []byte("var: some values"),
+		},
+
+		{
+			Name: "templates/deployment.yaml",
+			Data: []byte("some deployment"),
+		},
+		{
+			Name: "templates/service.yaml",
+			Data: []byte("some service"),
+		},
+		{
+			Name: chartutil.ChartfileName,
+			Data: []byte(`apiVersion: v1
+name: frobnitz
+description: This is a frobnitz.
+version: "1.2.3"
+keywords:
+  - frobnitz
+  - sprocket
+  - dodad
+maintainers:
+  - name: The Helm Team
+    email: helm@example.com
+  - name: Someone Else
+    email: nobody@example.com
+sources:
+  - https://example.com/foo/bar
+home: http://example.com
+icon: https://example.com/64x64.png
+`),
+		},
+	}
+
+	// Capture stderr to make sure message about Chart.yaml handle dependencies
+	// is not present
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Unable to create pipe: %s", err)
+	}
+	stderr := log.Writer()
+	log.SetOutput(w)
+	defer func() {
+		log.SetOutput(stderr)
+	}()
+
+	_, err = LoadFiles(goodFiles)
+	if err != nil {
+		t.Errorf("Expected good files to be loaded, got %v", err)
+	}
+	err = w.Close()
+	if err != nil {
+		t.Fatalf("Unable to close writer: %s", err)
+	}
+
+	var text bytes.Buffer
+	_, err = io.Copy(&text, r)
+	if err != nil {
+		t.Fatalf("Unable to copy from pipe: %s", err)
+	}
+	if text.String() != "" {
+		t.Errorf("Expected no message to Stderr, got %s", text.String())
+	}
+
 }
 
 // Packaging the chart on a Windows machine will produce an
@@ -143,12 +396,25 @@ func TestLoadFileBackslash(t *testing.T) {
 	verifyDependencies(t, c)
 }
 
+func TestLoadV2WithReqs(t *testing.T) {
+	l, err := Loader("testdata/frobnitz.v2.reqs")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	c, err := l.Load()
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+}
+
 func TestLoadInvalidArchive(t *testing.T) {
 	tmpdir, err := ioutil.TempDir("", "helm-test-")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpdir)
+	defer os.RemoveAll(tmpdir)
 
 	writeTar := func(filename, internalPath string, body []byte) {
 		dest, err := os.Create(filename)
@@ -187,7 +453,7 @@ func TestLoadInvalidArchive(t *testing.T) {
 		{"illegal-name.tgz", "./.", "chart illegally contains content outside the base directory"},
 		{"illegal-name2.tgz", "/./.", "chart illegally contains content outside the base directory"},
 		{"illegal-name3.tgz", "missing-leading-slash", "chart illegally contains content outside the base directory"},
-		{"illegal-name4.tgz", "/missing-leading-slash", "validation: chart.metadata is required"},
+		{"illegal-name4.tgz", "/missing-leading-slash", "Chart.yaml file is missing"},
 		{"illegal-abspath.tgz", "//foo", "chart illegally contains absolute paths"},
 		{"illegal-abspath2.tgz", "///foo", "chart illegally contains absolute paths"},
 		{"illegal-abspath3.tgz", "\\\\foo", "chart illegally contains absolute paths"},
@@ -221,8 +487,8 @@ func TestLoadInvalidArchive(t *testing.T) {
 	illegalChart = filepath.Join(tmpdir, "abs-path2.tgz")
 	writeTar(illegalChart, "files/whatever.yaml", []byte("hello: world"))
 	_, err = Load(illegalChart)
-	if err.Error() != "validation: chart.metadata is required" {
-		t.Error(err)
+	if err.Error() != "Chart.yaml file is missing" {
+		t.Errorf("Unexpected error message: %s", err)
 	}
 
 	// Finally, test that drive letter gets stripped off on Windows
@@ -380,7 +646,15 @@ func verifyChartFileAndTemplate(t *testing.T, c *chart.Chart, name string) {
 				t.Fatalf("Expected 2 Dependency, got %d", len(dep.Dependencies()))
 			}
 		default:
-			t.Errorf("Unexpected dependeny %s", dep.Name())
+			t.Errorf("Unexpected dependency %s", dep.Name())
+		}
+	}
+}
+
+func verifyBomStripped(t *testing.T, files []*chart.File) {
+	for _, file := range files {
+		if bytes.HasPrefix(file.Data, utf8bom) {
+			t.Errorf("Byte Order Mark still present in processed file %s", file.Name)
 		}
 	}
 }
