@@ -17,7 +17,6 @@ limitations under the License.
 package repo
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -109,12 +108,6 @@ func (r *Registry) Delete(url string) (*Entry, error) {
 	r.m.Unlock()
 
 	return entry, nil
-}
-
-type Locator interface {
-	IsLocal() bool // file or dir
-	Reader() *bytes.Reader
-	FilePath() string
 }
 
 // LocateChart looks for a chart and returns either the reader or an error.
