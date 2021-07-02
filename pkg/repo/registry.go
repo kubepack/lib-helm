@@ -116,6 +116,10 @@ func (r *Registry) LocateChart(repository, name, version string) (loader.ChartLo
 	name = strings.TrimSpace(name)
 	version = strings.TrimSpace(version)
 
+	if dir, ok := os.LookupEnv("UI_WIZARD_CHARTS_DIR"); ok {
+		repository = filepath.Join(dir, name)
+	}
+
 	if repository == "" {
 		return nil, nil, fmt.Errorf("can't find repository for chart %s", name)
 	}
