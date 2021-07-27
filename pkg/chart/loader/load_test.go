@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -32,7 +33,24 @@ import (
 
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chartutil"
+	"kubepack.dev/lib-helm/pkg/chart/loader/testdata"
 )
+
+func TestLoadFS(t *testing.T) {
+	fsys, err := fs.Sub(testdata.FS, "frobnitz")
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+
+	c, err := LoadFS(fsys)
+	if err != nil {
+		t.Fatalf("Failed to load testdata: %s", err)
+	}
+	verifyFrobnitz(t, c)
+	verifyChart(t, c)
+	verifyDependencies(t, c)
+	verifyDependenciesLock(t, c)
+}
 
 func TestLoadDir(t *testing.T) {
 	l, err := Loader("testdata/frobnitz")
