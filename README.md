@@ -1,7 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/kubepack.dev/lib-helm)](https://goreportcard.com/report/kubepack.dev/lib-helm)
 [![Build Status](https://github.com/kubepack/lib-helm/workflows/CI/badge.svg)](https://github.com/kubepack/lib-helm/actions?workflow=CI)
-[![codecov](https://codecov.io/gh/kubepack/lib-helm/branch/master/graph/badge.svg)](https://codecov.io/gh/kubepack/lib-helm)
-[![Slack](http://slack.kubernetes.io/badge.svg)](http://slack.kubernetes.io/#kubepack)
 [![Twitter](https://img.shields.io/twitter/follow/kubepack.svg?style=social&logo=twitter&label=Follow)](https://twitter.com/intent/follow?screen_name=Kubepack)
 
 # lib-helm
