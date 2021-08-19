@@ -25,8 +25,8 @@ require (
 	k8s.io/klog/v2 v2.8.0
 	k8s.io/kubectl v0.21.1
 	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
-	kmodules.xyz/client-go v0.0.0-20210719120358-dd0503cf99cf
-	kmodules.xyz/resource-metadata v0.5.8-0.20210722055301-dcc1abc08aa0
+	kmodules.xyz/client-go v0.0.0-20210819200123-937627e3d5ff
+	kmodules.xyz/resource-metadata v0.5.8-0.20210818102643-6e7f53af1b2a
 	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0
