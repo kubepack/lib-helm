@@ -187,6 +187,9 @@ spec:
     name: deployments
     scope: Namespaced
     version: v1
+  resourceRequirements:
+  - resources: spec.podTemplate.spec.resources
+    units: spec.replicas
   subTables:
   - columns:
     - name: Name

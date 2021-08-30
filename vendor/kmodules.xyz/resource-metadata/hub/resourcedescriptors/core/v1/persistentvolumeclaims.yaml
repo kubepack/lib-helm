@@ -61,6 +61,9 @@ spec:
     name: persistentvolumeclaims
     scope: Namespaced
     version: v1
+  resourceRequirements:
+  - resources: spec.podTemplate.spec.resources
+    units: spec.replicas
   ui:
     editor:
       name: core-persistentvolumeclaim-editor
