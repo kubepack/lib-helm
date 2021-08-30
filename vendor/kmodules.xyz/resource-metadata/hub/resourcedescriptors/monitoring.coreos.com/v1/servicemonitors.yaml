@@ -77,6 +77,9 @@ spec:
     name: servicemonitors
     scope: Namespaced
     version: v1
+  resourceRequirements:
+  - resources: spec.podTemplate.spec.resources
+    units: spec.replicas
   ui:
     editor:
       name: monitoringcoreoscom-servicemonitor-editor

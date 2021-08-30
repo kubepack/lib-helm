@@ -49,9 +49,17 @@ type ResourceDescriptorSpec struct {
 	Maintainers []ContactData
 	Links       []Link
 
+	ResourceRequirements []ResourceRequirements
+
 	UI *UIParameters
 
 	Installer *DeploymentParameters
+}
+
+type ResourceRequirements struct {
+	Units     string
+	Shards    string
+	Resources string
 }
 
 type RelatedResourcePage struct {

@@ -20,6 +20,9 @@ spec:
     name: csidrivers
     scope: Cluster
     version: v1beta1
+  resourceRequirements:
+  - resources: spec.podTemplate.spec.resources
+    units: spec.replicas
   validation:
     openAPIV3Schema:
       description: CSIDriver captures information about a Container Storage Interface
