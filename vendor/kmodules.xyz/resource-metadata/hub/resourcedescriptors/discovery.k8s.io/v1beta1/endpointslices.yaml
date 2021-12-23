@@ -1,4 +1,4 @@
-apiVersion: meta.appscode.com/v1alpha1
+apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
   creationTimestamp: null
@@ -24,4 +24,4 @@ spec:
     editor:
       name: discoveryk8sio-endpointslice-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.2.0
+      version: v0.3.0

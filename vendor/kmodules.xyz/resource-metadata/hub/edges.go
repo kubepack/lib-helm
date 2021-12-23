@@ -14,12 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha1
+package hub
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
+	"kmodules.xyz/resource-metadata/apis/meta/v1alpha1"
+
+	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-func addConversionFuncs(scheme *runtime.Scheme) error {
-	return nil
+func ListEdgeLabels() []v1alpha1.EdgeLabel {
+	labels := sets.NewString()
+	reg := NewRegistryOfKnownResources()
+	reg.Visit(func(key string, rd *v1alpha1.ResourceDescriptor) {
+		for _, c := range rd.Spec.Connections {
+			for _, lbl := range c.Labels {
+				labels.Insert(string(lbl))
+			}
+		}
+	})
+
+	result := make([]v1alpha1.EdgeLabel, 0, len(labels))
+	for lbl := range labels {
+		result = append(result, v1alpha1.EdgeLabel(lbl))
+	}
+	return result
 }
