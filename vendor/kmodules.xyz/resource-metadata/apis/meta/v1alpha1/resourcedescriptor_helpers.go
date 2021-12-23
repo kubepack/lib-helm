@@ -17,8 +17,10 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
 	"strings"
 
+	apiv1 "kmodules.xyz/client-go/api/v1"
 	"kmodules.xyz/client-go/apiextensions"
 	"kmodules.xyz/resource-metadata/crds"
 )
@@ -46,4 +48,30 @@ func IsOfficialType(group string) bool {
 	default:
 		return false
 	}
+}
+
+const (
+	GraphQueryVarSource      = "src"
+	GraphQueryVarTargetGroup = "targetGroup"
+	GraphQueryVarTargetKind  = "targetKind"
+)
+
+func (r ResourceLocator) GraphQuery(oid apiv1.OID) (string, map[string]interface{}) {
+	vars := map[string]interface{}{
+		GraphQueryVarSource:      string(oid),
+		GraphQueryVarTargetGroup: r.Ref.Group,
+		GraphQueryVarTargetKind:  r.Ref.Kind,
+	}
+
+	if r.Query.Raw != "" {
+		return r.Query.Raw, vars
+	}
+	return fmt.Sprintf(`query Find($src: String!, $targetGroup: String!, $targetKind: String!) {
+  find(oid: $src) {
+    refs: %s(group: $targetGroup, kind: $targetKind) {
+      namespace
+      name
+    }
+  }
+}`, r.Query.ByLabel), vars
 }
