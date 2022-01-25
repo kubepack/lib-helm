@@ -11,7 +11,8 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
-	"kmodules.xyz/resource-metadata/hub"
+	"kmodules.xyz/client-go/discovery"
+	"kmodules.xyz/resource-metadata/hub/resourceeditors"
 )
 
 func debug(format string, v ...interface{}) {
@@ -30,7 +31,7 @@ func setAnnotations(chrt *chart.Chart, k, v string) {
 	}
 }
 
-func RefillMetadata(reg *hub.Registry, ref, actual map[string]interface{}, gvr metav1.GroupVersionResource, rls types.NamespacedName) error {
+func RefillMetadata(mapper discovery.ResourceMapper, ref, actual map[string]interface{}, gvr metav1.GroupVersionResource, rls types.NamespacedName) error {
 	actual["metadata"] = map[string]interface{}{
 		"resource": map[string]interface{}{
 			"group":    gvr.Group,
@@ -102,10 +103,10 @@ func RefillMetadata(reg *hub.Registry, ref, actual map[string]interface{}, gvr m
 		}
 
 		gvk := schema.FromAPIVersionAndKind(refObj["apiVersion"].(string), refObj["kind"].(string))
-		if gvr, err := reg.GVR(gvk); err == nil {
-			if rd, err := reg.LoadByGVR(gvr); err == nil {
-				if rd.Spec.UI != nil {
-					for _, fields := range rd.Spec.UI.InstanceLabelPaths {
+		if gvr, err := mapper.GVR(gvk); err == nil {
+			if ed, ok := resourceeditors.LoadForGVR(gvr); ok {
+				if ed.Spec.UI != nil {
+					for _, fields := range ed.Spec.UI.InstanceLabelPaths {
 						fields := strings.Trim(fields, ".")
 						err = updateLabels(rls.Name, obj, strings.Split(fields, ".")...)
 						if err != nil {

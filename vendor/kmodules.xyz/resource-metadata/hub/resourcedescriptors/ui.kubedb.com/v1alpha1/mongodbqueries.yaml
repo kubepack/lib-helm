@@ -46,7 +46,7 @@ spec:
             queries:
               items:
                 properties:
-                  avgExecutionTimeInMS:
+                  avgExecutionTimeMilliSeconds:
                     format: int64
                     type: integer
                   collectionName:
@@ -58,10 +58,10 @@ spec:
                     type: integer
                   databaseName:
                     type: string
-                  maxExecutionTimeInMS:
+                  maxExecutionTimeMilliSeconds:
                     format: int64
                     type: integer
-                  minExecutionTimeInMS:
+                  minExecutionTimeMilliSeconds:
                     format: int64
                     type: integer
                   operation:
@@ -72,15 +72,6 @@ spec:
                     - DELETE
                     - GETMORE
                     type: string
-                required:
-                - avgExecutionTimeInMS
-                - collectionName
-                - command
-                - count
-                - databaseName
-                - maxExecutionTimeInMS
-                - minExecutionTimeInMS
-                - operation
                 type: object
               type: array
           required:
