@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 	"kmodules.xyz/client-go/discovery"
 	"kmodules.xyz/resource-metadata/hub/resourceeditors"
 	chartsapi "kubepack.dev/preset/apis/charts/v1alpha1"
@@ -45,6 +46,10 @@ func NewUncachedClient(getter action.RESTClientGetter) (client.Client, error) {
 		return nil, err
 	}
 
+	return NewUncachedClientForConfig(cfg)
+}
+
+func NewUncachedClientForConfig(cfg *rest.Config) (client.Client, error) {
 	mapper, err := apiutil.NewDynamicRESTMapper(cfg)
 	if err != nil {
 		return nil, err
