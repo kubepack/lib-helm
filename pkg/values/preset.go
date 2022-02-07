@@ -21,15 +21,17 @@ func MergePresetValues(kc client.Client, chrt *chart.Chart, ref chartsapi.ChartP
 		return nil, err
 	}
 
-	ps, err := ref.ClusterChartPreset()
-	if err != nil {
-		return nil, err
+	var valOpts Options
+	if ref.PresetName != "" {
+		ps, err := ref.ClusterChartPreset()
+		if err != nil {
+			return nil, err
+		}
+		valOpts, err = LoadClusterChartPresetValues(kc, vpsMap, ps, ref.Namespace)
+		if err != nil {
+			return nil, err
+		}
 	}
-	valOpts, err := LoadClusterChartPresetValues(kc, vpsMap, ps, ref.Namespace)
-	if err != nil {
-		return nil, err
-	}
-
 	return valOpts.MergeValues(chrt)
 }
 
