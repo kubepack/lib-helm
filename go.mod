@@ -24,7 +24,7 @@ require (
 	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
 	kmodules.xyz/client-go v0.0.0-20220203031013-1de48437aaf3
 	kmodules.xyz/resource-metadata v0.8.2-0.20220203195725-17129529420b
-	kubepack.dev/preset v0.0.0-20220202134203-5d5853a977cb
+	kubepack.dev/preset v0.0.0-20220207074019-090909e7fcff
 	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0
