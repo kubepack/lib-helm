@@ -164,8 +164,8 @@ func (t *parser) key(data map[string]interface{}) (reterr error) {
 				return err
 			}
 			return errors.Errorf("key %q has no value", string(k))
-			//set(data, string(k), "")
-			//return err
+			// set(data, string(k), "")
+			// return err
 		case last == '[':
 			// We are in a list index context, so we need to set an index.
 			i, err := t.keyIndex()
@@ -184,7 +184,7 @@ func (t *parser) key(data map[string]interface{}) (reterr error) {
 			set(data, kk, list)
 			return err
 		case last == '=':
-			//End of key. Consume =, Get value.
+			// End of key. Consume =, Get value.
 			// FIXME: Get value list first
 			vl, e := t.valList()
 			switch e {
@@ -267,8 +267,8 @@ func (t *parser) keyIndex() (int, error) {
 	}
 	// v should be the index
 	return strconv.Atoi(string(v))
-
 }
+
 func (t *parser) listItem(list []interface{}, i int) ([]interface{}, error) {
 	if i < 0 {
 		return list, fmt.Errorf("negative %d index not allowed", i)

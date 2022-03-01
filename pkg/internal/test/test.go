@@ -95,7 +95,7 @@ func update(filename string, in []byte) error {
 	if !*updateGolden {
 		return nil
 	}
-	return ioutil.WriteFile(filename, normalize(in), 0666)
+	return ioutil.WriteFile(filename, normalize(in), 0o666)
 }
 
 func normalize(in []byte) []byte {

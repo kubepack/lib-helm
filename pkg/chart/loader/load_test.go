@@ -240,7 +240,8 @@ func TestLoadFiles_BadCases(t *testing.T) {
 					Data: []byte(""),
 				},
 			},
-			expectError: "validation: chart.metadata.apiVersion is required"},
+			expectError: "validation: chart.metadata.apiVersion is required",
+		},
 	} {
 		_, err := LoadFiles(tt.bufferedFiles)
 		if err == nil {
@@ -399,7 +400,6 @@ icon: https://example.com/64x64.png
 	if text.String() != "" {
 		t.Errorf("Expected no message to Stderr, got %s", text.String())
 	}
-
 }
 
 // Packaging the chart on a Windows machine will produce an
@@ -444,7 +444,7 @@ func TestLoadInvalidArchive(t *testing.T) {
 
 		h := &tar.Header{
 			Name:    internalPath,
-			Mode:    0755,
+			Mode:    0o755,
 			Size:    int64(len(body)),
 			ModTime: time.Now(),
 		}
@@ -564,7 +564,6 @@ func verifyChart(t *testing.T, c *chart.Chart) {
 			t.Errorf("Expected %s version %s, got %s", dep.Name(), exp["version"], dep.Metadata.Version)
 		}
 	}
-
 }
 
 func verifyDependencies(t *testing.T, c *chart.Chart) {
