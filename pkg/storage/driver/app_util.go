@@ -418,7 +418,7 @@ func ResourceKey(apiVersion, kind, chartName, name string) (string, error) {
 	groupPrefix := gv.Group
 	groupPrefix = strings.TrimSuffix(groupPrefix, ".k8s.io")
 	groupPrefix = strings.TrimSuffix(groupPrefix, ".kubernetes.io")
-	//groupPrefix = strings.TrimSuffix(groupPrefix, ".x-k8s.io")
+	// groupPrefix = strings.TrimSuffix(groupPrefix, ".x-k8s.io")
 	groupPrefix = strings.Replace(groupPrefix, ".", "_", -1)
 	groupPrefix = flect.Pascalize(groupPrefix)
 
@@ -446,7 +446,7 @@ func ResourceFilename(apiVersion, kind, chartName, name string) (string, string,
 	groupPrefix := gv.Group
 	groupPrefix = strings.TrimSuffix(groupPrefix, ".k8s.io")
 	groupPrefix = strings.TrimSuffix(groupPrefix, ".kubernetes.io")
-	//groupPrefix = strings.TrimSuffix(groupPrefix, ".x-k8s.io")
+	// groupPrefix = strings.TrimSuffix(groupPrefix, ".x-k8s.io")
 	groupPrefix = strings.Replace(groupPrefix, ".", "_", -1)
 	groupPrefix = flect.Pascalize(groupPrefix)
 

@@ -106,7 +106,7 @@ func (s *Server) CopyCharts(origin string) ([]string, error) {
 		if err != nil {
 			return []string{}, err
 		}
-		if err := ioutil.WriteFile(newname, data, 0644); err != nil {
+		if err := ioutil.WriteFile(newname, data, 0o644); err != nil {
 			return []string{}, err
 		}
 		copied[i] = newname
@@ -130,7 +130,7 @@ func (s *Server) CreateIndex() error {
 	}
 
 	ifile := filepath.Join(s.docroot, "index.yaml")
-	return ioutil.WriteFile(ifile, d, 0644)
+	return ioutil.WriteFile(ifile, d, 0o644)
 }
 
 func (s *Server) Start() {
@@ -173,5 +173,5 @@ func setTestingRepository(url, fname string) error {
 		Name: "test",
 		URL:  url,
 	})
-	return r.WriteFile(fname, 0644)
+	return r.WriteFile(fname, 0o644)
 }
