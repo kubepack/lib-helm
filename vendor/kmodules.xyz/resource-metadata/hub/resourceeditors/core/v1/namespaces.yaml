@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1
   name: core-v1-namespaces
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/core/namespaces.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/core/namespaces.png
+    type: image/png
   resource:
     group: ""
     kind: Namespace
@@ -19,4 +24,4 @@ spec:
     editor:
       name: core-namespace-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0

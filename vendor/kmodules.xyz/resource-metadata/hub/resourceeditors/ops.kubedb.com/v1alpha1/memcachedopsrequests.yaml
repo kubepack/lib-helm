@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1alpha1
   name: ops.kubedb.com-v1alpha1-memcachedopsrequests
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/ops.kubedb.com/memcachedopsrequests.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/ops.kubedb.com/memcachedopsrequests.png
+    type: image/png
   resource:
     group: ops.kubedb.com
     kind: MemcachedOpsRequest
@@ -19,4 +24,4 @@ spec:
     editor:
       name: opskubedbcom-memcachedopsrequest-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0

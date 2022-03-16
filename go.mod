@@ -22,13 +22,18 @@ require (
 	k8s.io/klog/v2 v2.9.0
 	k8s.io/kubectl v0.21.1
 	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
-	kmodules.xyz/client-go v0.0.0-20220203031013-1de48437aaf3
-	kmodules.xyz/resource-metadata v0.8.2-0.20220203195725-17129529420b
+	kmodules.xyz/client-go v0.0.0-20220308080632-2543b61b64fd
+	kmodules.xyz/resource-metadata v0.10.5
 	kubepack.dev/preset v0.0.0-20220207074019-090909e7fcff
 	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
-	sigs.k8s.io/cli-utils v0.25.0
+	sigs.k8s.io/cli-utils v0.26.1
 	sigs.k8s.io/controller-runtime v0.9.0
 	sigs.k8s.io/yaml v1.2.0
+)
+
+require (
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	gomodules.xyz/sets v0.2.1 // indirect
 )
 
 require (
@@ -139,6 +144,7 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
+	gomodules.xyz/x v0.0.13 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	google.golang.org/grpc v1.38.0 // indirect

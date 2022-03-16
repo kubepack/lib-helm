@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1
   name: apps-v1-statefulsets
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/apps/statefulsets.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/apps/statefulsets.png
+    type: image/png
   resource:
     group: apps
     kind: StatefulSet
@@ -19,4 +24,4 @@ spec:
     editor:
       name: apps-statefulset-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0

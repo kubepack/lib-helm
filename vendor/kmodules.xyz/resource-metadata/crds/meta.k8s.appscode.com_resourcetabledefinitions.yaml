@@ -40,7 +40,8 @@ spec:
                     color:
                       properties:
                         template:
-                          description: 'Available color codes: success,danger,neutral,warning,info'
+                          description: 'Available color codes: success,danger,warning,info,
+                            link, white, light, dark, black see https://bulma.io/documentation/elements/tag/#colors'
                           type: string
                       type: object
                     description:
@@ -108,6 +109,13 @@ spec:
                           type: string
                       required:
                       - type
+                      type: object
+                    textAlign:
+                      type: string
+                    tooltip:
+                      properties:
+                        template:
+                          type: string
                       type: object
                     type:
                       description: type is an OpenAPI type definition for this column.

@@ -57,10 +57,6 @@ type ResourceDescriptorSpec struct {
 	// +optional
 	Validation *crdv1.CustomResourceValidation `json:"validation,omitempty"`
 
-	// Icons is an optional list of icons for an application. Icon information includes the source, size,
-	// and mime type.
-	Icons []ImageSpec `json:"icons,omitempty"`
-
 	// Maintainers is an optional list of maintainers of the application. The maintainers in this list maintain the
 	// the source code, images, and package for the application.
 	Maintainers []ContactData `json:"maintainers,omitempty"`
@@ -204,11 +200,13 @@ type ResourceColumnDefinition struct {
 	// +optional
 	PathTemplate string `json:"pathTemplate,omitempty"`
 
-	Sort  *SortDefinition      `json:"sort,omitempty"`
-	Link  *AttributeDefinition `json:"link,omitempty"`
-	Shape ShapeProperty        `json:"shape,omitempty"`
-	Icon  *AttributeDefinition `json:"icon,omitempty"`
-	Color *ColorDefinition     `json:"color,omitempty"`
+	Sort      *SortDefinition      `json:"sort,omitempty"`
+	Link      *AttributeDefinition `json:"link,omitempty"`
+	Tooltip   *AttributeDefinition `json:"tooltip,omitempty"`
+	Shape     ShapeProperty        `json:"shape,omitempty"`
+	Icon      *AttributeDefinition `json:"icon,omitempty"`
+	Color     *ColorDefinition     `json:"color,omitempty"`
+	TextAlign string               `json:"textAlign,omitempty"`
 }
 
 type SortDefinition struct {
@@ -243,7 +241,8 @@ const (
 )
 
 type ColorDefinition struct {
-	// Available color codes: success,danger,neutral,warning,info
+	// Available color codes: success,danger,warning,info, link, white, light, dark, black
+	// see https://bulma.io/documentation/elements/tag/#colors
 	Template string `json:"template,omitempty"`
 }
 
@@ -263,10 +262,12 @@ type ResourceColumn struct {
 	// should be given a higher priority.
 	Priority int32 `json:"priority"`
 
-	Sort  *SortHeader   `json:"sort,omitempty"`
-	Link  bool          `json:"link,omitempty"`
-	Shape ShapeProperty `json:"shape,omitempty"`
-	Icon  bool          `json:"icon,omitempty"`
+	Sort      *SortHeader   `json:"sort,omitempty"`
+	Link      bool          `json:"link,omitempty"`
+	Tooltip   bool          `json:"tooltip,omitempty"`
+	Shape     ShapeProperty `json:"shape,omitempty"`
+	Icon      bool          `json:"icon,omitempty"`
+	TextAlign string        `json:"textAlign,omitempty"`
 }
 
 // ImageSpec contains information about an image used as an icon.
