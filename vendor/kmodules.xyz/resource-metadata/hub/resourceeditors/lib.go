@@ -21,13 +21,16 @@ import (
 	"embed"
 	"fmt"
 	iofs "io/fs"
+	"path/filepath"
 	"reflect"
 	"sort"
+	"sync"
 
 	kmapi "kmodules.xyz/client-go/api/v1"
 	"kmodules.xyz/resource-metadata/apis/meta/v1alpha1"
 
 	"github.com/pkg/errors"
+	ioutilx "gomodules.xyz/x/ioutil"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/klog/v2"
@@ -35,37 +38,53 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-//go:embed **/**/*.yaml
-var fs embed.FS
-
-func FS() embed.FS {
-	return fs
-}
-
 var (
-	reMap = map[string]*v1alpha1.ResourceEditor{}
+	//go:embed **/**/*.yaml trigger
+	fs embed.FS
+
+	m     sync.Mutex
+	reMap map[string]*v1alpha1.ResourceEditor
+
+	loader = ioutilx.NewReloader(
+		filepath.Join("/tmp", "hub", "resourceeditors"),
+		fs,
+		func(fsys iofs.FS) {
+			reMap = map[string]*v1alpha1.ResourceEditor{}
+
+			if err := iofs.WalkDir(fsys, ".", func(path string, d iofs.DirEntry, err error) error {
+				if d.IsDir() || err != nil {
+					return errors.Wrap(err, path)
+				}
+				ext := filepath.Ext(d.Name())
+				if ext != ".yaml" && ext != ".yml" && ext != ".json" {
+					return nil
+				}
+
+				data, err := iofs.ReadFile(fsys, path)
+				if err != nil {
+					return errors.Wrap(err, path)
+				}
+				var obj v1alpha1.ResourceEditor
+				err = yaml.Unmarshal(data, &obj)
+				if err != nil {
+					return errors.Wrap(err, path)
+				}
+				reMap[obj.Name] = &obj
+
+				return nil
+			}); err != nil {
+				panic(errors.Wrapf(err, "failed to load %s", reflect.TypeOf(v1alpha1.ResourceEditor{})))
+			}
+		},
+	)
 )
 
 func init() {
-	if err := iofs.WalkDir(fs, ".", func(path string, d iofs.DirEntry, err error) error {
-		if d.IsDir() || err != nil {
-			return err
-		}
-		data, err := fs.ReadFile(path)
-		if err != nil {
-			return errors.Wrap(err, path)
-		}
-		var obj v1alpha1.ResourceEditor
-		err = yaml.Unmarshal(data, &obj)
-		if err != nil {
-			return errors.Wrap(err, path)
-		}
-		reMap[obj.Name] = &obj
+	loader.ReloadIfTriggered()
+}
 
-		return nil
-	}); err != nil {
-		panic(errors.Wrapf(err, "failed to load %s", reflect.TypeOf(v1alpha1.ResourceEditor{})))
-	}
+func EmbeddedFS() iofs.FS {
+	return fs
 }
 
 func DefaultEditorName(gvr schema.GroupVersionResource) string {
@@ -76,6 +95,10 @@ func DefaultEditorName(gvr schema.GroupVersionResource) string {
 }
 
 func LoadByName(name string) (*v1alpha1.ResourceEditor, error) {
+	m.Lock()
+	defer m.Unlock()
+	loader.ReloadIfTriggered()
+
 	if obj, ok := reMap[name]; ok {
 		return obj, nil
 	}
@@ -83,6 +106,10 @@ func LoadByName(name string) (*v1alpha1.ResourceEditor, error) {
 }
 
 func LoadDefaultByGVR(gvr schema.GroupVersionResource) (*v1alpha1.ResourceEditor, bool) {
+	m.Lock()
+	defer m.Unlock()
+	loader.ReloadIfTriggered()
+
 	name := DefaultEditorName(gvr)
 	obj, ok := reMap[name]
 	return obj, ok
@@ -116,6 +143,10 @@ func LoadByResourceID(kc client.Client, rid *kmapi.ResourceID) (*v1alpha1.Resour
 }
 
 func List() []v1alpha1.ResourceEditor {
+	m.Lock()
+	defer m.Unlock()
+	loader.ReloadIfTriggered()
+
 	out := make([]v1alpha1.ResourceEditor, 0, len(reMap))
 	for _, rl := range reMap {
 		out = append(out, *rl)
@@ -127,6 +158,10 @@ func List() []v1alpha1.ResourceEditor {
 }
 
 func Names() []string {
+	m.Lock()
+	defer m.Unlock()
+	loader.ReloadIfTriggered()
+
 	out := make([]string, 0, len(reMap))
 	for name := range reMap {
 		out = append(out, name)

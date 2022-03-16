@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1alpha1
   name: appcatalog.appscode.com-v1alpha1-appbindings
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/appcatalog.appscode.com/appbindings.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/appcatalog.appscode.com/appbindings.png
+    type: image/png
   resource:
     group: appcatalog.appscode.com
     kind: AppBinding
@@ -19,4 +24,4 @@ spec:
     editor:
       name: appcatalogappscodecom-appbinding-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0

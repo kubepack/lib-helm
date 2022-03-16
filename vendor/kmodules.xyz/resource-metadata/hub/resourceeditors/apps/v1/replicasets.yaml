@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1
   name: apps-v1-replicasets
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/apps/replicasets.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/apps/replicasets.png
+    type: image/png
   resource:
     group: apps
     kind: ReplicaSet
@@ -19,4 +24,4 @@ spec:
     editor:
       name: apps-replicaset-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0

@@ -9,6 +9,11 @@ metadata:
     k8s.io/version: v1
   name: coordination.k8s.io-v1-leases
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/coordination.k8s.io/leases.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/coordination.k8s.io/leases.png
+    type: image/png
   resource:
     group: coordination.k8s.io
     kind: Lease
@@ -19,4 +24,4 @@ spec:
     editor:
       name: coordinationk8sio-lease-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.3.0
+      version: v0.4.0
