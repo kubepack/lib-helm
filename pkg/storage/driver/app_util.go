@@ -157,6 +157,16 @@ func newApplicationObject(rls *rspb.Release) *v1beta1.Application {
 
 	if editorGVR, ok := rls.Chart.Metadata.Annotations["meta.x-helm.dev/editor"]; ok {
 		obj.Annotations["editor.x-helm.dev/"+rls.Name] = editorGVR
+
+		if values, ok := rls.Chart.Values["Values"]; ok {
+			if v2, ok := values.(map[string]interface{}); ok {
+				if f, ok := v2["form"]; ok {
+					if fd, err := json.Marshal(f); err == nil {
+						obj.Annotations["form.release.x-helm.dev/"+rls.Name] = string(fd)
+					}
+				}
+			}
+		}
 	}
 
 	components, _, err := parser.ExtractComponents([]byte(rls.Manifest))
@@ -269,6 +279,12 @@ func decodeReleaseFromApp(app *v1beta1.Application, rlsNames []string, di dynami
 		if editorGVR != nil {
 			rls.Chart = &chart.Chart{
 				Values: map[string]interface{}{},
+			}
+			if f, ok := app.Annotations["form.release.x-helm.dev/"+rls.Name]; ok {
+				var form map[string]interface{}
+				if err = json.Unmarshal([]byte(f), &form); err == nil {
+					tpl.Values.Object["form"] = form
+				}
 			}
 			rls.Chart.Values = tpl.Values.Object
 			rls.Config = tpl.Values.Object
