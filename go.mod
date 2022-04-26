@@ -22,18 +22,13 @@ require (
 	k8s.io/klog/v2 v2.9.0
 	k8s.io/kubectl v0.21.1
 	kmodules.xyz/apply v0.0.0-20210503080849-eb226c295465
-	kmodules.xyz/client-go v0.0.0-20220308080632-2543b61b64fd
-	kmodules.xyz/resource-metadata v0.10.5
-	kubepack.dev/preset v0.0.0-20220207074019-090909e7fcff
+	kmodules.xyz/client-go v0.0.0-20220404224906-af7b092cfac5
+	kmodules.xyz/resource-metadata v0.10.16-0.20220419233724-fbd1b7e25b05
+	kubepack.dev/preset v0.0.0-20220318014008-5b564b7dc9e7
 	sigs.k8s.io/application v0.8.2-0.20200306235134-f10d9ca8abd4
 	sigs.k8s.io/cli-utils v0.26.1
 	sigs.k8s.io/controller-runtime v0.9.0
 	sigs.k8s.io/yaml v1.2.0
-)
-
-require (
-	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	gomodules.xyz/sets v0.2.1 // indirect
 )
 
 require (
@@ -67,6 +62,7 @@ require (
 	github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
 	github.com/go-logr/logr v0.4.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.3 // indirect
@@ -117,10 +113,10 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
-	github.com/prometheus/common v0.18.0 // indirect
+	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351 // indirect
-	github.com/russross/blackfriday v1.5.2 // indirect
+	github.com/russross/blackfriday v1.5.3-0.20190124082335-a477dd164691 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
@@ -134,16 +130,17 @@ require (
 	github.com/xlab/treeprint v0.0.0-20181112141820-a009c3971eca // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
-	go.opencensus.io v0.22.3 // indirect
-	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
+	go.opencensus.io v0.22.5 // indirect
+	go.starlark.net v0.0.0-20200821142938-949cc6f4b097 // indirect
 	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b // indirect
 	golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 // indirect
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
 	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	gomodules.xyz/jsonpatch/v2 v2.2.0 // indirect
+	gomodules.xyz/sets v0.2.1 // indirect
 	gomodules.xyz/x v0.0.13 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
