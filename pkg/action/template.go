@@ -20,9 +20,8 @@ import (
 type Renderer struct {
 	cfg *ha.Configuration
 
-	opts   InstallOptions
-	reg    *repo.Registry
-	result *release.Release
+	opts InstallOptions
+	reg  *repo.Registry
 }
 
 func NewRenderer() (*Renderer, error) {
