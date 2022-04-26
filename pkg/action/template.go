@@ -14,10 +14,11 @@ import (
 	"k8s.io/klog/v2"
 	libchart "kubepack.dev/lib-helm/pkg/chart"
 	"kubepack.dev/lib-helm/pkg/repo"
+	"kubepack.dev/lib-helm/pkg/values"
 )
 
 type Renderer struct {
-	cfg *Configuration
+	cfg *ha.Configuration
 
 	opts   InstallOptions
 	reg    *repo.Registry
@@ -25,7 +26,7 @@ type Renderer struct {
 }
 
 func NewRenderer() (*Renderer, error) {
-	cfg := new(Configuration)
+	cfg := new(ha.Configuration)
 	err := cfg.Init(nil, "default", "secret", debug)
 	if err != nil {
 		return nil, err
@@ -35,14 +36,38 @@ func NewRenderer() (*Renderer, error) {
 	return NewRendererForConfig(cfg), nil
 }
 
-func NewRendererForConfig(cfg *Configuration) *Renderer {
+func NewRendererForConfig(cfg *ha.Configuration) *Renderer {
+	opts := InstallOptions{
+		// ChartURL:  url,
+		// ChartName: name,
+		// Version:   version,
+		Values: values.Options{
+			ValuesFile:  "",
+			ValuesPatch: nil,
+		},
+		ClientOnly:   true,
+		DryRun:       true,
+		DisableHooks: false,
+		Replace:      true, // Skip the name check
+		Wait:         false,
+		Devel:        false,
+		Timeout:      0,
+		Namespace:    "default",
+		ReleaseName:  "release-name",
+		Atomic:       false,
+		IncludeCRDs:  false, //
+		SkipCRDs:     true,  //
+	}
 	return &Renderer{
-		cfg: cfg,
+		cfg:  cfg,
+		opts: opts,
 	}
 }
 
-func (x *Renderer) WithOptions(opts InstallOptions) *Renderer {
-	x.opts = opts
+func (x *Renderer) ForChart(url, name, version string) *Renderer {
+	x.opts.ChartURL = url
+	x.opts.ChartName = name
+	x.opts.Version = version
 	return x
 }
 
@@ -52,15 +77,7 @@ func (x *Renderer) WithRegistry(reg *repo.Registry) *Renderer {
 }
 
 func (x *Renderer) Run() (string, map[string]string, error) {
-	cfg := new(ha.Configuration)
-	// TODO: Use secret driver for which namespace?
-	err := cfg.Init(nil, x.opts.Namespace, "secret", debug)
-	if err != nil {
-		return "", nil, err
-	}
-	cfg.Capabilities = chartutil.DefaultCapabilities
-
-	cmd := ha.NewInstall(cfg)
+	cmd := ha.NewInstall(x.cfg)
 	var extraAPIs []string
 	cmd.DryRun = x.opts.DryRun
 	cmd.ReleaseName = x.opts.ReleaseName
