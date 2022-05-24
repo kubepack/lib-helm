@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
-	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -80,22 +79,16 @@ func NewUncachedClientForConfig(cfg *rest.Config) (client.Client, error) {
 }
 
 func RefillMetadata(kc client.Client, ref, actual map[string]interface{}, gvr metav1.GroupVersionResource, rls types.NamespacedName) error {
-	gvk, err := kc.RESTMapper().KindFor(schema.GroupVersionResource{
-		Group:    gvr.Group,
-		Version:  gvr.Version,
-		Resource: gvr.Resource,
-	})
+	// WARNING: Don't use kc.RESTMapper().KindFor to find Kind because the CRD may be yet exist in the cluster
+	rsMeta, ok, err := unstructured.NestedMap(ref, "metadata", "resource")
 	if err != nil {
-		return errors.Wrap(err, "failed to detect Kind")
+		return err
+	} else if !ok {
+		return fmt.Errorf(".metadata.resource not found in ref values")
 	}
 
 	actual["metadata"] = map[string]interface{}{
-		"resource": map[string]interface{}{
-			"group":   gvr.Group,
-			"version": gvr.Version,
-			"name":    gvr.Resource,
-			"kind":    gvk.Kind,
-		},
+		"resource": rsMeta,
 		"release": map[string]interface{}{
 			"name":      rls.Name,
 			"namespace": rls.Namespace,
