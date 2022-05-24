@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
+	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -79,11 +80,21 @@ func NewUncachedClientForConfig(cfg *rest.Config) (client.Client, error) {
 }
 
 func RefillMetadata(kc client.Client, ref, actual map[string]interface{}, gvr metav1.GroupVersionResource, rls types.NamespacedName) error {
+	gvk, err := kc.RESTMapper().KindFor(schema.GroupVersionResource{
+		Group:    gvr.Group,
+		Version:  gvr.Version,
+		Resource: gvr.Resource,
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to detect Kind")
+	}
+
 	actual["metadata"] = map[string]interface{}{
 		"resource": map[string]interface{}{
-			"group":    gvr.Group,
-			"version":  gvr.Version,
-			"resource": gvr.Resource,
+			"group":   gvr.Group,
+			"version": gvr.Version,
+			"name":    gvr.Resource,
+			"kind":    gvk.Kind,
 		},
 		"release": map[string]interface{}{
 			"name":      rls.Name,
@@ -110,6 +121,8 @@ func RefillMetadata(kc client.Client, ref, actual map[string]interface{}, gvr me
 	//}
 	mapper := discovery.NewResourceMapper(kc.RESTMapper())
 
+	_, usesForm := ref["form"]
+
 	for key, o := range actualResources {
 		// apiVersion
 		// kind
@@ -120,6 +133,9 @@ func RefillMetadata(kc client.Client, ref, actual map[string]interface{}, gvr me
 
 		refObj, ok := refResources[key].(map[string]interface{})
 		if !ok {
+			if usesForm {
+				continue // in case of form, we will see form objects which are not present in the ref resources
+			}
 			return fmt.Errorf("missing key %s in reference chart values", key)
 		}
 		obj := o.(map[string]interface{})
