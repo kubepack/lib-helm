@@ -487,6 +487,9 @@ golang.org/x/text/width
 # golang.org/x/time v0.0.0-20220411224347-583f2d630306
 ## explicit
 golang.org/x/time/rate
+# gomodules.xyz/encoding v0.0.5
+## explicit; go 1.17
+gomodules.xyz/encoding/json
 # gomodules.xyz/jsonpatch/v2 v2.2.0
 ## explicit; go 1.12
 gomodules.xyz/jsonpatch/v2
