@@ -1,4 +1,4 @@
-apiVersion: meta.k8s.appscode.com/v1alpha1
+apiVersion: ui.k8s.appscode.com/v1alpha1
 kind: ResourceEditor
 metadata:
   creationTimestamp: null
@@ -19,6 +19,6 @@ spec:
     editor:
       name: appk8sio-application-editor
       url: https://bundles.byte.builders/ui/
-      version: v0.4.3
+      version: v0.4.8
     instanceLabelPaths:
     - spec.selector.matchLabels
