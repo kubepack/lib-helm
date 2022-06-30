@@ -24,7 +24,7 @@ require (
 	k8s.io/kubectl v0.24.1
 	kmodules.xyz/apply v0.24.1
 	kmodules.xyz/client-go v0.24.5
-	kmodules.xyz/resource-metadata v0.12.1
+	kmodules.xyz/resource-metadata v0.12.3
 	kubepack.dev/preset v0.0.0-20220318014008-5b564b7dc9e7
 	sigs.k8s.io/application v0.0.0-00010101000000-000000000000
 	sigs.k8s.io/cli-utils v0.31.1

@@ -1,4 +1,4 @@
-package chart
+package values
 
 import (
 	"bytes"

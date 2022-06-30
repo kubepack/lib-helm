@@ -12,7 +12,6 @@ import (
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
 	"k8s.io/klog/v2"
-	libchart "kubepack.dev/lib-helm/pkg/chart"
 	"kubepack.dev/lib-helm/pkg/repo"
 	"kubepack.dev/lib-helm/pkg/values"
 )
@@ -102,7 +101,7 @@ func (x *Renderer) Run() (string, map[string]string, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	if _, err := libchart.IsChartInstallable(chrt.Chart); err != nil {
+	if _, err := values.IsChartInstallable(chrt.Chart); err != nil {
 		return "", nil, err
 	}
 
@@ -138,7 +137,7 @@ func (x *Renderer) Run() (string, map[string]string, error) {
 	if !x.opts.DisableHooks {
 		for _, m := range rel.Hooks {
 			// skip TestHook
-			if libchart.IsEvent(m.Events, release.HookTest) {
+			if values.IsEvent(m.Events, release.HookTest) {
 				continue
 			}
 			_, _ = fmt.Fprintf(&manifests, "---\n# Source: %s\n%s\n", m.Path, m.Manifest)
