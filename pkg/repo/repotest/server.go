@@ -16,7 +16,6 @@ limitations under the License.
 package repotest
 
 import (
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -34,7 +33,7 @@ import (
 // The caller is responsible for destroying the temp directory as well as stopping
 // the server.
 func NewTempServer(glob string) (*Server, error) {
-	tdir, err := ioutil.TempDir("", "helm-repotest-")
+	tdir, err := os.MkdirTemp("", "helm-repotest-")
 	if err != nil {
 		return nil, err
 	}
@@ -102,11 +101,11 @@ func (s *Server) CopyCharts(origin string) ([]string, error) {
 	for i, f := range files {
 		base := filepath.Base(f)
 		newname := filepath.Join(s.docroot, base)
-		data, err := ioutil.ReadFile(f)
+		data, err := os.ReadFile(f)
 		if err != nil {
 			return []string{}, err
 		}
-		if err := ioutil.WriteFile(newname, data, 0o644); err != nil {
+		if err := os.WriteFile(newname, data, 0o644); err != nil {
 			return []string{}, err
 		}
 		copied[i] = newname
@@ -130,7 +129,7 @@ func (s *Server) CreateIndex() error {
 	}
 
 	ifile := filepath.Join(s.docroot, "index.yaml")
-	return ioutil.WriteFile(ifile, d, 0o644)
+	return os.WriteFile(ifile, d, 0o644)
 }
 
 func (s *Server) Start() {
@@ -152,6 +151,7 @@ func (s *Server) Stop() {
 // URL returns the URL of the server.
 //
 // Example:
+//
 //	http://localhost:1776
 func (s *Server) URL() string {
 	return s.srv.URL

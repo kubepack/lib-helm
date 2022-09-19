@@ -17,7 +17,7 @@ package getter
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -105,7 +105,7 @@ func TestDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err := ioutil.ReadAll(got)
+	data, err := io.ReadAll(got)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +141,7 @@ func TestDownload(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	data, err = ioutil.ReadAll(got)
+	data, err = io.ReadAll(got)
 	if err != nil {
 		t.Fatal(err)
 	}
