@@ -49,7 +49,7 @@ type Registry struct {
 
 var _ IRegistry = &Registry{}
 
-func NewCachedRegistry(kc client.Client, cache httpcache.Cache) *Registry {
+func NewCachedRegistry(kc client.Reader, cache httpcache.Cache) *Registry {
 	return &Registry{repos: make(map[string]*Entry), kc: kc, cache: cache}
 }
 
