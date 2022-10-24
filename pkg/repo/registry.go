@@ -61,10 +61,14 @@ func NewMemoryCacheRegistry() *Registry {
 	return NewCachedRegistry(nil, httpcache.NewMemoryCache())
 }
 
-func NewDiskCacheRegistry() *Registry {
+func DefaultDiskCache() httpcache.Cache {
 	dir := helmpath.CachePath("kubepack")
 	_ = os.MkdirAll(dir, 0o755)
-	return NewCachedRegistry(nil, diskcache.New(dir))
+	return diskcache.New(dir)
+}
+
+func NewDiskCacheRegistry() *Registry {
+	return NewCachedRegistry(nil, DefaultDiskCache())
 }
 
 func (r *Registry) Add(e *Entry) error {
