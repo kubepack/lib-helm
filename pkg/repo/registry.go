@@ -41,7 +41,7 @@ import (
 )
 
 type Registry struct {
-	kc    client.Client
+	kc    client.Reader
 	repos map[string]*Entry
 	cache httpcache.Cache
 	m     sync.RWMutex
