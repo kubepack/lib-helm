@@ -17,6 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	apiregistrationapi "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1"
 	"kmodules.xyz/client-go/discovery"
 	uiapi "kmodules.xyz/resource-metadata/apis/ui/v1alpha1"
 	"kmodules.xyz/resource-metadata/hub/resourceeditors"
@@ -60,6 +61,9 @@ func NewUncachedClientForConfig(cfg *rest.Config) (client.Client, error) {
 
 	scheme := runtime.NewScheme()
 	if err := clientgoscheme.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
+	if err := apiregistrationapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
 	if err := chartsapi.AddToScheme(scheme); err != nil {

@@ -23,6 +23,7 @@ require (
 	k8s.io/cli-runtime v0.25.2
 	k8s.io/client-go v0.25.3
 	k8s.io/klog/v2 v2.80.1
+	k8s.io/kube-aggregator v0.25.1
 	k8s.io/kubectl v0.25.2
 	kmodules.xyz/apply v0.25.0
 	kmodules.xyz/client-go v0.25.6
