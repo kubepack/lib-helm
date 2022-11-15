@@ -97,7 +97,7 @@ func RefillMetadata(kc client.Client, ref, actual map[string]interface{}, gvr me
 	if err != nil {
 		return err
 	} else if !ok {
-		return fmt.Errorf(".metadata.resource not found in ref values")
+		return fmt.Errorf(".metadata.resource not found in chart values")
 	}
 
 	actual["metadata"] = map[string]interface{}{
