@@ -28,8 +28,8 @@ require (
 	k8s.io/kube-aggregator v0.25.1
 	k8s.io/kubectl v0.25.2
 	kmodules.xyz/apply v0.25.0
-	kmodules.xyz/client-go v0.25.14
-	kmodules.xyz/resource-metadata v0.15.0
+	kmodules.xyz/client-go v0.25.16
+	kmodules.xyz/resource-metadata v0.16.1
 	kubepack.dev/preset v0.0.2
 	sigs.k8s.io/application v0.0.0-00010101000000-000000000000
 	sigs.k8s.io/cli-utils v0.33.0
@@ -53,7 +53,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/cli v20.10.17+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v20.10.17+incompatible // indirect
+	github.com/docker/docker v20.10.24+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.6.4 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
