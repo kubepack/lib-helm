@@ -10,6 +10,7 @@ import (
 	"github.com/gobuffalo/flect"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
+	apiextensionsapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -21,11 +22,12 @@ import (
 	"kmodules.xyz/client-go/discovery"
 	uiapi "kmodules.xyz/resource-metadata/apis/ui/v1alpha1"
 	"kmodules.xyz/resource-metadata/hub/resourceeditors"
-	chartsapi "kubepack.dev/preset/apis/charts/v1alpha1"
-	storeapi "kubepack.dev/preset/apis/store/v1alpha1"
-	appapi "sigs.k8s.io/application/api/app/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
+	chartsapi "x-helm.dev/apimachinery/apis/charts/v1alpha1"
+	driversapi "x-helm.dev/apimachinery/apis/drivers/v1alpha1"
+	productsapi "x-helm.dev/apimachinery/apis/products/v1alpha1"
+	releasesapi "x-helm.dev/apimachinery/apis/releases/v1alpha1"
 )
 
 func debug(format string, v ...interface{}) {
@@ -60,21 +62,30 @@ func NewUncachedClientForConfig(cfg *rest.Config) (client.Client, error) {
 	}
 
 	scheme := runtime.NewScheme()
+
 	if err := clientgoscheme.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
+	if err := apiextensionsapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
 	if err := apiregistrationapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
+	// x-helm.dev
 	if err := chartsapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
-	if err := storeapi.AddToScheme(scheme); err != nil {
+	if err := driversapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
-	if err := appapi.AddToScheme(scheme); err != nil {
+	if err := productsapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
+	if err := releasesapi.AddToScheme(scheme); err != nil {
+		return nil, err
+	}
+	// resource-metadata
 	if err := uiapi.AddToScheme(scheme); err != nil {
 		return nil, err
 	}
