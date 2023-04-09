@@ -51,7 +51,6 @@ spec:
                               type: string
                           required:
                           - name
-                          - url
                           - version
                           type: object
                         name:

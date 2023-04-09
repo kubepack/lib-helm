@@ -1093,5 +1093,5 @@ sigs.k8s.io/structured-merge-diff/v4 v4.2.3 h1:PRbqxJClWWYMNV1dhaG4NsibJbArud9kF
 sigs.k8s.io/structured-merge-diff/v4 v4.2.3/go.mod h1:qjx8mGObPmV2aSZepjQjbmb2ihdVs8cGKBraizNC69E=
 sigs.k8s.io/yaml v1.3.0 h1:a2VclLzOGrwOHDiV8EfBGhvjHvP46CtW5j6POvhYGGo=
 sigs.k8s.io/yaml v1.3.0/go.mod h1:GeOyir5tyXNByN85N/dRIT9es5UQNerPYEKK56eTBm8=
-x-helm.dev/apimachinery v0.0.2-0.20230408194503-10de296ed1a4 h1:QDB7rh8OvP/y4Ute4c0mNBzIT8iI/h8A0E3WWyTHyc0=
-x-helm.dev/apimachinery v0.0.2-0.20230408194503-10de296ed1a4/go.mod h1:kvXPbsGWd0J0n49KsGa9Ets3w58Y2ilExoZDUMI4nn4=
+x-helm.dev/apimachinery v0.0.2-0.20230409005828-30df5f7bd52d h1:HKmBYa2pYJI4RedtCLXNgeQFpwY45xgAa3Y4CG2U4+c=
+x-helm.dev/apimachinery v0.0.2-0.20230409005828-30df5f7bd52d/go.mod h1:kvXPbsGWd0J0n49KsGa9Ets3w58Y2ilExoZDUMI4nn4=
