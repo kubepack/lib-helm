@@ -166,5 +166,3 @@ require (
 )
 
 replace helm.sh/helm/v3 => github.com/x-helm/helm/v3 v3.10.2-0.20230408184307-59c40cc34e6f
-
-replace sigs.k8s.io/application => github.com/kmodules/application v0.8.4-0.20220917032906-876dc58b7366
