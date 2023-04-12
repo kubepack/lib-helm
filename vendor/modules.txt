@@ -422,7 +422,7 @@ github.com/docker/distribution/registry/client/auth/challenge
 github.com/docker/distribution/registry/client/transport
 github.com/docker/distribution/registry/storage/cache
 github.com/docker/distribution/registry/storage/cache/memory
-# github.com/docker/docker v23.0.1+incompatible
+# github.com/docker/docker v23.0.3+incompatible
 ## explicit
 github.com/docker/docker/api/types
 github.com/docker/docker/api/types/blkiodev
@@ -2229,7 +2229,7 @@ kmodules.xyz/client-go/discovery
 kmodules.xyz/client-go/meta
 kmodules.xyz/client-go/tools/clusterid
 kmodules.xyz/client-go/tools/parser
-# kmodules.xyz/resource-metadata v0.16.1
+# kmodules.xyz/resource-metadata v0.16.2
 ## explicit; go 1.18
 kmodules.xyz/resource-metadata/apis/shared
 kmodules.xyz/resource-metadata/apis/ui
