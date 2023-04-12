@@ -28,6 +28,17 @@ type ChartSourceRef struct {
 	SourceRef kmapi.TypedObjectReference `json:"sourceRef"`
 }
 
+type ChartSourceFlatRef struct {
+	Name string `json:"name"`
+	// Version is an optional version indicator for the Application.
+	// +optional
+	Version         string `json:"version,omitempty"`
+	SourceAPIGroup  string `json:"sourceApiGroup,omitempty"`
+	SourceKind      string `json:"sourceKind"`
+	SourceNamespace string `json:"sourceNamespace,omitempty"`
+	SourceName      string `json:"sourceName"`
+}
+
 // ChartRepoRef references to a single version of a Chart
 type ChartRepoRef struct {
 	// +optional
