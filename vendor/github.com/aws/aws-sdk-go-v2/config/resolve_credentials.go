@@ -384,6 +384,10 @@ func assumeWebIdentity(ctx context.Context, cfg *aws.Config, filepath string, ro
 		return fmt.Errorf("token file path is not set")
 	}
 
+	if len(roleARN) == 0 {
+		return fmt.Errorf("role ARN is not set")
+	}
+
 	optFns := []func(*stscreds.WebIdentityRoleOptions){
 		func(options *stscreds.WebIdentityRoleOptions) {
 			options.RoleSessionName = sessionName
@@ -394,29 +398,11 @@ func assumeWebIdentity(ctx context.Context, cfg *aws.Config, filepath string, ro
 	if err != nil {
 		return err
 	}
-
 	if found {
 		optFns = append(optFns, optFn)
 	}
 
-	opts := stscreds.WebIdentityRoleOptions{
-		RoleARN: roleARN,
-	}
-
-	for _, fn := range optFns {
-		fn(&opts)
-	}
-
-	if len(opts.RoleARN) == 0 {
-		return fmt.Errorf("role ARN is not set")
-	}
-
-	client := opts.Client
-	if client == nil {
-		client = sts.NewFromConfig(*cfg)
-	}
-
-	provider := stscreds.NewWebIdentityRoleProvider(client, roleARN, stscreds.IdentityTokenFile(filepath), optFns...)
+	provider := stscreds.NewWebIdentityRoleProvider(sts.NewFromConfig(*cfg), roleARN, stscreds.IdentityTokenFile(filepath), optFns...)
 
 	cfg.Credentials = provider
 

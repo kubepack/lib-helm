@@ -12,8 +12,6 @@ import (
 type ExpiredTokenException struct {
 	Message *string
 
-	ErrorCodeOverride *string
-
 	noSmithyDocumentSerde
 }
 
@@ -26,12 +24,7 @@ func (e *ExpiredTokenException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *ExpiredTokenException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "ExpiredTokenException"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *ExpiredTokenException) ErrorCode() string             { return "ExpiredTokenException" }
 func (e *ExpiredTokenException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The request could not be fulfilled because the identity provider (IDP) that was
@@ -41,8 +34,6 @@ func (e *ExpiredTokenException) ErrorFault() smithy.ErrorFault { return smithy.F
 // persists, the identity provider might be down or not responding.
 type IDPCommunicationErrorException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -56,12 +47,7 @@ func (e *IDPCommunicationErrorException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *IDPCommunicationErrorException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "IDPCommunicationError"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *IDPCommunicationErrorException) ErrorCode() string             { return "IDPCommunicationError" }
 func (e *IDPCommunicationErrorException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The identity provider (IdP) reported that authentication failed. This might be
@@ -70,8 +56,6 @@ func (e *IDPCommunicationErrorException) ErrorFault() smithy.ErrorFault { return
 // or has been explicitly revoked.
 type IDPRejectedClaimException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -85,12 +69,7 @@ func (e *IDPRejectedClaimException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *IDPRejectedClaimException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "IDPRejectedClaim"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *IDPRejectedClaimException) ErrorCode() string             { return "IDPRejectedClaim" }
 func (e *IDPRejectedClaimException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The error returned if the message passed to DecodeAuthorizationMessage was
@@ -98,8 +77,6 @@ func (e *IDPRejectedClaimException) ErrorFault() smithy.ErrorFault { return smit
 // linebreaks.
 type InvalidAuthorizationMessageException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -114,10 +91,7 @@ func (e *InvalidAuthorizationMessageException) ErrorMessage() string {
 	return *e.Message
 }
 func (e *InvalidAuthorizationMessageException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "InvalidAuthorizationMessageException"
-	}
-	return *e.ErrorCodeOverride
+	return "InvalidAuthorizationMessageException"
 }
 func (e *InvalidAuthorizationMessageException) ErrorFault() smithy.ErrorFault {
 	return smithy.FaultClient
@@ -128,8 +102,6 @@ func (e *InvalidAuthorizationMessageException) ErrorFault() smithy.ErrorFault {
 // request.
 type InvalidIdentityTokenException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -143,20 +115,13 @@ func (e *InvalidIdentityTokenException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *InvalidIdentityTokenException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "InvalidIdentityToken"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *InvalidIdentityTokenException) ErrorCode() string             { return "InvalidIdentityToken" }
 func (e *InvalidIdentityTokenException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The request was rejected because the policy document was malformed. The error
 // message describes the specific error.
 type MalformedPolicyDocumentException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -170,12 +135,7 @@ func (e *MalformedPolicyDocumentException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *MalformedPolicyDocumentException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "MalformedPolicyDocument"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *MalformedPolicyDocumentException) ErrorCode() string             { return "MalformedPolicyDocument" }
 func (e *MalformedPolicyDocumentException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
 // The request was rejected because the total packed size of the session policies
@@ -183,15 +143,15 @@ func (e *MalformedPolicyDocumentException) ErrorFault() smithy.ErrorFault { retu
 // compresses the session policy document, session policy ARNs, and session tags
 // into a packed binary format that has a separate limit. The error message
 // indicates by percentage how close the policies and tags are to the upper size
-// limit. For more information, see Passing Session Tags in STS (https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
-// in the IAM User Guide. You could receive this error even though you meet other
-// defined session policy and session tag limits. For more information, see IAM
-// and STS Entity Character Limits (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-limits-entity-length)
+// limit. For more information, see Passing Session Tags in STS
+// (https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html) in the
+// IAM User Guide. You could receive this error even though you meet other defined
+// session policy and session tag limits. For more information, see IAM and STS
+// Entity Character Limits
+// (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-limits-entity-length)
 // in the IAM User Guide.
 type PackedPolicyTooLargeException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -205,23 +165,17 @@ func (e *PackedPolicyTooLargeException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *PackedPolicyTooLargeException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "PackedPolicyTooLarge"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *PackedPolicyTooLargeException) ErrorCode() string             { return "PackedPolicyTooLarge" }
 func (e *PackedPolicyTooLargeException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }
 
-// STS is not activated in the requested region for the account that is being
-// asked to generate credentials. The account administrator must use the IAM
-// console to activate STS in that region. For more information, see Activating
-// and Deactivating Amazon Web Services STS in an Amazon Web Services Region (https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html)
+// STS is not activated in the requested region for the account that is being asked
+// to generate credentials. The account administrator must use the IAM console to
+// activate STS in that region. For more information, see Activating and
+// Deactivating Amazon Web Services STS in an Amazon Web Services Region
+// (https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_enable-regions.html)
 // in the IAM User Guide.
 type RegionDisabledException struct {
 	Message *string
-
-	ErrorCodeOverride *string
 
 	noSmithyDocumentSerde
 }
@@ -235,10 +189,5 @@ func (e *RegionDisabledException) ErrorMessage() string {
 	}
 	return *e.Message
 }
-func (e *RegionDisabledException) ErrorCode() string {
-	if e == nil || e.ErrorCodeOverride == nil {
-		return "RegionDisabledException"
-	}
-	return *e.ErrorCodeOverride
-}
+func (e *RegionDisabledException) ErrorCode() string             { return "RegionDisabledException" }
 func (e *RegionDisabledException) ErrorFault() smithy.ErrorFault { return smithy.FaultClient }

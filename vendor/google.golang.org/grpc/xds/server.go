@@ -49,7 +49,7 @@ const serverPrefix = "[xds-server %p] "
 
 var (
 	// These new functions will be overridden in unit tests.
-	newXDSClient = func() (xdsclient.XDSClient, func(), error) {
+	newXDSClient = func() (xdsclient.XDSClient, error) {
 		return xdsclient.New()
 	}
 	newGRPCServer = func(opts ...grpc.ServerOption) grpcServer {
@@ -60,6 +60,10 @@ var (
 	drainServerTransports = internal.DrainServerTransports.(func(*grpc.Server, string))
 	logger                = grpclog.Component("xds")
 )
+
+func prefixLogger(p *GRPCServer) *internalgrpclog.PrefixLogger {
+	return internalgrpclog.NewPrefixLogger(logger, fmt.Sprintf(serverPrefix, p))
+}
 
 // grpcServer contains methods from grpc.Server which are used by the
 // GRPCServer type here. This is useful for overriding in unit tests.
@@ -85,9 +89,8 @@ type GRPCServer struct {
 	// clientMu is used only in initXDSClient(), which is called at the
 	// beginning of Serve(), where we have to decide if we have to create a
 	// client or use an existing one.
-	clientMu       sync.Mutex
-	xdsC           xdsclient.XDSClient
-	xdsClientClose func()
+	clientMu sync.Mutex
+	xdsC     xdsclient.XDSClient
 }
 
 // NewGRPCServer creates an xDS-enabled gRPC server using the passed in opts.
@@ -103,7 +106,7 @@ func NewGRPCServer(opts ...grpc.ServerOption) *GRPCServer {
 		gs:   newGRPCServer(newOpts...),
 		quit: grpcsync.NewEvent(),
 	}
-	s.logger = internalgrpclog.NewPrefixLogger(logger, fmt.Sprintf(serverPrefix, s))
+	s.logger = prefixLogger(s)
 	s.logger.Infof("Created xds.GRPCServer")
 	s.handleServerOptions(opts)
 
@@ -181,17 +184,17 @@ func (s *GRPCServer) initXDSClient() error {
 	newXDSClient := newXDSClient
 	if s.opts.bootstrapContentsForTesting != nil {
 		// Bootstrap file contents may be specified as a server option for tests.
-		newXDSClient = func() (xdsclient.XDSClient, func(), error) {
+		newXDSClient = func() (xdsclient.XDSClient, error) {
 			return xdsclient.NewWithBootstrapContentsForTesting(s.opts.bootstrapContentsForTesting)
 		}
 	}
 
-	client, close, err := newXDSClient()
+	client, err := newXDSClient()
 	if err != nil {
 		return fmt.Errorf("xds: failed to create xds-client: %v", err)
 	}
 	s.xdsC = client
-	s.xdsClientClose = close
+	s.logger.Infof("Created an xdsClient")
 	return nil
 }
 
@@ -331,7 +334,7 @@ func (s *GRPCServer) Stop() {
 	s.quit.Fire()
 	s.gs.Stop()
 	if s.xdsC != nil {
-		s.xdsClientClose()
+		s.xdsC.Close()
 	}
 }
 
@@ -342,7 +345,7 @@ func (s *GRPCServer) GracefulStop() {
 	s.quit.Fire()
 	s.gs.GracefulStop()
 	if s.xdsC != nil {
-		s.xdsClientClose()
+		s.xdsC.Close()
 	}
 }
 

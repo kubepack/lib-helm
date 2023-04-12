@@ -43,7 +43,7 @@ import (
 
 const (
 	// DefaultRemoteRoot is the default remote TUF root location.
-	DefaultRemoteRoot = "https://tuf-repo-cdn.sigstore.dev"
+	DefaultRemoteRoot = "https://sigstore-tuf-root.storage.googleapis.com"
 
 	// TufRootEnv is the name of the environment variable that locates an alternate local TUF root location.
 	TufRootEnv = "TUF_ROOT"
@@ -58,9 +58,6 @@ var (
 	singletonTUF     *TUF
 	singletonTUFOnce = new(sync.Once)
 	singletonTUFErr  error
-
-	// initMu locks concurrent calls to initializeTUF
-	initMu sync.Mutex
 )
 
 // getRemoteRoot is a var for testing.
@@ -243,11 +240,6 @@ func GetRootStatus(ctx context.Context) (*RootStatus, error) {
 // * forceUpdate: indicates checking the remote for an update, even when the local
 // timestamp.json is up to date.
 func initializeTUF(mirror string, root []byte, embedded fs.FS, forceUpdate bool) (*TUF, error) {
-	initMu.Lock()
-	defer initMu.Unlock()
-
-	// TODO: If a temporary error occurs for a long-running process, this singleton will
-	// never retry
 	singletonTUFOnce.Do(func() {
 		t := &TUF{
 			mirror:   mirror,
@@ -288,30 +280,24 @@ func initializeTUF(mirror string, root []byte, embedded fs.FS, forceUpdate bool)
 			return
 		}
 
+		// We may already have an up-to-date local store! Check to see if it needs to be updated.
+		trustedTimestamp, ok := trustedMeta["timestamp.json"]
+		if ok && !isExpiredTimestamp(trustedTimestamp) && !forceUpdate {
+			// We're golden so stash the TUF object for later use
+			singletonTUF = t
+			return
+		}
+
+		// Update if local is not populated or out of date.
+		if err := t.updateMetadataAndDownloadTargets(); err != nil {
+			singletonTUFErr = fmt.Errorf("updating local metadata and targets: %w", err)
+			return
+		}
+
+		// We're golden so stash the TUF object for later use
 		singletonTUF = t
 	})
-	if singletonTUFErr != nil {
-		return nil, singletonTUFErr
-	}
-
-	trustedMeta, err := singletonTUF.local.GetMeta()
-	if err != nil {
-		return nil, fmt.Errorf("getting trusted meta: %w", err)
-	}
-
-	// We may already have an up-to-date local store! Check to see if it needs to be updated.
-	trustedTimestamp, ok := trustedMeta["timestamp.json"]
-	if ok && !isExpiredTimestamp(trustedTimestamp) && !forceUpdate {
-		// We're golden so stash the TUF object for later use
-		return singletonTUF, nil
-	}
-
-	// Update if local is not populated or out of date.
-	if err := singletonTUF.updateMetadataAndDownloadTargets(); err != nil {
-		return nil, fmt.Errorf("updating local metadata and targets: %w", err)
-	}
-
-	return singletonTUF, nil
+	return singletonTUF, singletonTUFErr
 }
 
 // TODO: Remove ctx arg.

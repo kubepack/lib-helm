@@ -186,7 +186,7 @@ func (b *clusterImplBalancer) updateLoadStore(newConfig *LBConfig) error {
 	} else {
 		// Old is not nil, new is not nil, compare string values, if
 		// different, stop old and start new.
-		if !b.lrsServer.Equal(newConfig.LoadReportingServer) {
+		if *b.lrsServer != *newConfig.LoadReportingServer {
 			b.lrsServer = newConfig.LoadReportingServer
 			stopOldLoadReport = true
 			startNewLoadReport = true

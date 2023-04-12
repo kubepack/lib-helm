@@ -30,6 +30,10 @@ func NewTokenRateLimit(tokens uint) *TokenRateLimit {
 	}
 }
 
+func isTimeoutError(error) bool {
+	return false
+}
+
 type canceledError struct {
 	Err error
 }

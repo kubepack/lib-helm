@@ -44,14 +44,14 @@ const xdsScheme = "xds"
 // ClientConns at the same time.
 func newBuilderForTesting(config []byte) (resolver.Builder, error) {
 	return &xdsResolverBuilder{
-		newXDSClient: func() (xdsclient.XDSClient, func(), error) {
+		newXDSClient: func() (xdsclient.XDSClient, error) {
 			return xdsclient.NewWithBootstrapContentsForTesting(config)
 		},
 	}, nil
 }
 
 // For overriding in unittests.
-var newXDSClient = func() (xdsclient.XDSClient, func(), error) { return xdsclient.New() }
+var newXDSClient = func() (xdsclient.XDSClient, error) { return xdsclient.New() }
 
 func init() {
 	resolver.Register(&xdsResolverBuilder{})
@@ -59,7 +59,7 @@ func init() {
 }
 
 type xdsResolverBuilder struct {
-	newXDSClient func() (xdsclient.XDSClient, func(), error)
+	newXDSClient func() (xdsclient.XDSClient, error)
 }
 
 // Build helps implement the resolver.Builder interface.
@@ -87,12 +87,11 @@ func (b *xdsResolverBuilder) Build(target resolver.Target, cc resolver.ClientCon
 		newXDSClient = b.newXDSClient
 	}
 
-	client, close, err := newXDSClient()
+	client, err := newXDSClient()
 	if err != nil {
 		return nil, fmt.Errorf("xds: failed to create xds-client: %v", err)
 	}
-	r.xdsClient = client
-	r.xdsClientClose = close
+	r.client = client
 	bootstrapConfig := client.BootstrapConfig()
 	if bootstrapConfig == nil {
 		return nil, errors.New("bootstrap configuration is empty")
@@ -139,11 +138,11 @@ func (b *xdsResolverBuilder) Build(target resolver.Target, cc resolver.ClientCon
 	r.ldsResourceName = bootstrap.PopulateResourceTemplate(template, endpoint)
 
 	// Register a watch on the xdsClient for the resource name determined above.
-	cancelWatch := watchService(r.xdsClient, r.ldsResourceName, r.handleServiceUpdate, r.logger)
-	r.logger.Infof("Watch started on resource name %v with xds-client %p", r.ldsResourceName, r.xdsClient)
+	cancelWatch := watchService(r.client, r.ldsResourceName, r.handleServiceUpdate, r.logger)
+	r.logger.Infof("Watch started on resource name %v with xds-client %p", r.ldsResourceName, r.client)
 	r.cancelWatch = func() {
 		cancelWatch()
-		r.logger.Infof("Watch cancel on resource name %v with xds-client %p", r.ldsResourceName, r.xdsClient)
+		r.logger.Infof("Watch cancel on resource name %v with xds-client %p", r.ldsResourceName, r.client)
 	}
 
 	go r.run()
@@ -175,8 +174,7 @@ type xdsResolver struct {
 	ldsResourceName string
 
 	// The underlying xdsClient which performs all xDS requests and responses.
-	xdsClient      xdsclient.XDSClient
-	xdsClientClose func()
+	client xdsclient.XDSClient
 	// A channel for the watch API callback to write service updates on to. The
 	// updates are read by the run goroutine and passed on to the ClientConn.
 	updateCh chan suWithError
@@ -220,13 +218,13 @@ func (r *xdsResolver) sendNewServiceConfig(cs *configSelector) bool {
 		r.cc.ReportError(err)
 		return false
 	}
-	r.logger.Infof("Received update on resource %v from xds-client %p, generated service config: %v", r.ldsResourceName, r.xdsClient, pretty.FormatJSON(sc))
+	r.logger.Infof("Received update on resource %v from xds-client %p, generated service config: %v", r.ldsResourceName, r.client, pretty.FormatJSON(sc))
 
 	// Send the update to the ClientConn.
 	state := iresolver.SetConfigSelector(resolver.State{
 		ServiceConfig: r.cc.ParseServiceConfig(string(sc)),
 	}, cs)
-	r.cc.UpdateState(xdsclient.SetClient(state, r.xdsClient))
+	r.cc.UpdateState(xdsclient.SetClient(state, r.client))
 	return true
 }
 
@@ -239,7 +237,7 @@ func (r *xdsResolver) run() {
 			return
 		case update := <-r.updateCh:
 			if update.err != nil {
-				r.logger.Warningf("Watch error on resource %v from xds-client %p, %v", r.ldsResourceName, r.xdsClient, update.err)
+				r.logger.Warningf("Watch error on resource %v from xds-client %p, %v", r.ldsResourceName, r.client, update.err)
 				if xdsresource.ErrType(update.err) == xdsresource.ErrorTypeResourceNotFound {
 					// If error is resource-not-found, it means the LDS
 					// resource was removed. Ultimately send an empty service
@@ -267,7 +265,7 @@ func (r *xdsResolver) run() {
 			// Create the config selector for this update.
 			cs, err := r.newConfigSelector(update.su)
 			if err != nil {
-				r.logger.Warningf("Error parsing update on resource %v from xds-client %p: %v", r.ldsResourceName, r.xdsClient, err)
+				r.logger.Warningf("Error parsing update on resource %v from xds-client %p: %v", r.ldsResourceName, r.client, err)
 				r.cc.ReportError(err)
 				continue
 			}
@@ -315,8 +313,8 @@ func (r *xdsResolver) Close() {
 	if r.cancelWatch != nil {
 		r.cancelWatch()
 	}
-	if r.xdsClientClose != nil {
-		r.xdsClientClose()
+	if r.client != nil {
+		r.client.Close()
 	}
 	r.closed.Fire()
 	r.logger.Infof("Shutdown")

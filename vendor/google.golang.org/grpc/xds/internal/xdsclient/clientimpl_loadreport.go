@@ -30,15 +30,13 @@ import (
 func (c *clientImpl) ReportLoad(server *bootstrap.ServerConfig) (*load.Store, func()) {
 	c.authorityMu.Lock()
 	a, err := c.newAuthorityLocked(server)
+	c.authorityMu.Unlock()
 	if err != nil {
-		c.authorityMu.Unlock()
 		c.logger.Infof("xds: failed to connect to the control plane to do load reporting for authority %q: %v", server, err)
 		return nil, func() {}
 	}
 	// Hold the ref before starting load reporting.
-	a.refLocked()
-	c.authorityMu.Unlock()
-
+	a.ref()
 	store, cancelF := a.reportLoad()
 	return store, func() {
 		cancelF()

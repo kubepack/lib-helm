@@ -32,14 +32,14 @@ var _ XDSClient = &clientImpl{}
 
 // clientImpl is the real implementation of the xds client. The exported Client
 // is a wrapper of this struct with a ref count.
+//
+// Implements UpdateHandler interface.
+// TODO(easwars): Make a wrapper struct which implements this interface in the
+// style of ccBalancerWrapper so that the Client type does not implement these
+// exported methods.
 type clientImpl struct {
-	done               *grpcsync.Event
-	config             *bootstrap.Config
-	logger             *grpclog.PrefixLogger
-	watchExpiryTimeout time.Duration
-	serializer         *callbackSerializer
-	serializerClose    func()
-	resourceTypes      *resourceTypeRegistry
+	done   *grpcsync.Event
+	config *bootstrap.Config
 
 	// authorityMu protects the authority fields. It's necessary because an
 	// authority is created when it's used.
@@ -60,6 +60,9 @@ type clientImpl struct {
 	// An authority is either in authorities, or idleAuthorities,
 	// never both.
 	idleAuthorities *cache.TimeoutCache
+
+	logger             *grpclog.PrefixLogger
+	watchExpiryTimeout time.Duration
 }
 
 // BootstrapConfig returns the configuration read from the bootstrap file.
@@ -68,8 +71,8 @@ func (c *clientImpl) BootstrapConfig() *bootstrap.Config {
 	return c.config
 }
 
-// close closes the gRPC connection to the management server.
-func (c *clientImpl) close() {
+// Close closes the gRPC connection to the management server.
+func (c *clientImpl) Close() {
 	if c.done.HasFired() {
 		return
 	}
@@ -77,13 +80,16 @@ func (c *clientImpl) close() {
 	// TODO: Should we invoke the registered callbacks here with an error that
 	// the client is closed?
 
+	// Note that Close needs to check for nils even if some of them are always
+	// set in the constructor. This is because the constructor defers Close() in
+	// error cases, and the fields might not be set when the error happens.
+
 	c.authorityMu.Lock()
 	for _, a := range c.authorities {
 		a.close()
 	}
 	c.idleAuthorities.Clear(true)
 	c.authorityMu.Unlock()
-	c.serializerClose()
 
 	c.logger.Infof("Shutdown")
 }

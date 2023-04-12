@@ -27,12 +27,22 @@ import (
 	v3endpointpb "github.com/envoyproxy/go-control-plane/envoy/config/endpoint/v3"
 	v3typepb "github.com/envoyproxy/go-control-plane/envoy/type/v3"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc/internal/grpclog"
 	"google.golang.org/grpc/internal/pretty"
 	"google.golang.org/grpc/xds/internal"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-func unmarshalEndpointsResource(r *anypb.Any) (string, EndpointsUpdate, error) {
+// UnmarshalEndpoints processes resources received in an EDS response,
+// validates them, and transforms them into a native struct which contains only
+// fields we are interested in.
+func UnmarshalEndpoints(opts *UnmarshalOptions) (map[string]EndpointsUpdateErrTuple, UpdateMetadata, error) {
+	update := make(map[string]EndpointsUpdateErrTuple)
+	md, err := processAllResources(opts, update)
+	return update, md, err
+}
+
+func unmarshalEndpointsResource(r *anypb.Any, logger *grpclog.PrefixLogger) (string, EndpointsUpdate, error) {
 	r, err := unwrapResource(r)
 	if err != nil {
 		return "", EndpointsUpdate{}, fmt.Errorf("failed to unwrap resource: %v", err)
@@ -46,8 +56,9 @@ func unmarshalEndpointsResource(r *anypb.Any) (string, EndpointsUpdate, error) {
 	if err := proto.Unmarshal(r.GetValue(), cla); err != nil {
 		return "", EndpointsUpdate{}, fmt.Errorf("failed to unmarshal resource: %v", err)
 	}
+	logger.Infof("Resource with name: %v, type: %T, contains: %v", cla.GetClusterName(), cla, pretty.ToJSON(cla))
 
-	u, err := parseEDSRespProto(cla)
+	u, err := parseEDSRespProto(cla, logger)
 	if err != nil {
 		return cla.GetClusterName(), EndpointsUpdate{}, err
 	}
@@ -107,7 +118,7 @@ func parseEndpoints(lbEndpoints []*v3endpointpb.LbEndpoint, uniqueEndpointAddrs 
 	return endpoints, nil
 }
 
-func parseEDSRespProto(m *v3endpointpb.ClusterLoadAssignment) (EndpointsUpdate, error) {
+func parseEDSRespProto(m *v3endpointpb.ClusterLoadAssignment, logger *grpclog.PrefixLogger) (EndpointsUpdate, error) {
 	ret := EndpointsUpdate{}
 	for _, dropPolicy := range m.GetPolicy().GetDropOverloads() {
 		ret.Drops = append(ret.Drops, parseDropPolicy(dropPolicy))
@@ -152,7 +163,7 @@ func parseEDSRespProto(m *v3endpointpb.ClusterLoadAssignment) (EndpointsUpdate, 
 		ret.Localities = append(ret.Localities, Locality{
 			ID:        lid,
 			Endpoints: endpoints,
-			Weight:    weight,
+			Weight:    locality.GetLoadBalancingWeight().GetValue(),
 			Priority:  priority,
 		})
 	}

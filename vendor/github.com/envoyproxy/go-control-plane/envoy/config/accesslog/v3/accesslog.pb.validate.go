@@ -719,17 +719,6 @@ func (m *ComparisonFilter) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetValue() == nil {
-		err := ComparisonFilterValidationError{
-			field:  "Value",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if all {
 		switch v := interface{}(m.GetValue()).(type) {
 		case interface{ ValidateAll() error }:

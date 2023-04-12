@@ -24,7 +24,6 @@ import (
 	"strconv"
 
 	xxhash "github.com/cespare/xxhash/v2"
-	"google.golang.org/grpc/internal/grpclog"
 	"google.golang.org/grpc/resolver"
 )
 
@@ -66,12 +65,9 @@ type ringEntry struct {
 // and first item with hash >= given hash will be returned.
 //
 // Must be called with a non-empty subConns map.
-func newRing(subConns *resolver.AddressMap, minRingSize, maxRingSize uint64, logger *grpclog.PrefixLogger) *ring {
-	logger.Debugf("newRing: number of subConns is %d, minRingSize is %d, maxRingSize is %d", subConns.Len(), minRingSize, maxRingSize)
-
+func newRing(subConns *resolver.AddressMap, minRingSize, maxRingSize uint64) *ring {
 	// https://github.com/envoyproxy/envoy/blob/765c970f06a4c962961a0e03a467e165b276d50f/source/common/upstream/ring_hash_lb.cc#L114
 	normalizedWeights, minWeight := normalizeWeights(subConns)
-	logger.Debugf("newRing: normalized subConn weights is %v", normalizedWeights)
 
 	// Normalized weights for {3,3,4} is {0.3,0.3,0.4}.
 
@@ -82,7 +78,6 @@ func newRing(subConns *resolver.AddressMap, minRingSize, maxRingSize uint64, log
 	scale := math.Min(math.Ceil(minWeight*float64(minRingSize))/minWeight, float64(maxRingSize))
 	ringSize := math.Ceil(scale)
 	items := make([]*ringEntry, 0, int(ringSize))
-	logger.Debugf("newRing: creating new ring of size %v", ringSize)
 
 	// For each entry, scale*weight nodes are generated in the ring.
 	//
@@ -92,19 +87,16 @@ func newRing(subConns *resolver.AddressMap, minRingSize, maxRingSize uint64, log
 	//
 	// A hash is generated for each item, and later the results will be sorted
 	// based on the hash.
-	var currentHashes, targetHashes float64
+	var (
+		idx       int
+		targetIdx float64
+	)
 	for _, scw := range normalizedWeights {
-		targetHashes += scale * scw.weight
-		// This index ensures that ring entries corresponding to the same
-		// address hash to different values. And since this index is
-		// per-address, these entries hash to the same value across address
-		// updates.
-		idx := 0
-		for currentHashes < targetHashes {
-			h := xxhash.Sum64String(scw.sc.addr + "_" + strconv.Itoa(idx))
-			items = append(items, &ringEntry{hash: h, sc: scw.sc})
+		targetIdx += scale * scw.weight
+		for float64(idx) < targetIdx {
+			h := xxhash.Sum64String(scw.sc.addr + strconv.Itoa(idx))
+			items = append(items, &ringEntry{idx: idx, hash: h, sc: scw.sc})
 			idx++
-			currentHashes++
 		}
 	}
 
