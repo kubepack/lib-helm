@@ -25,20 +25,19 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gobuffalo/flect"
+	"gomodules.xyz/sets"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/release"
 	rspb "helm.sh/helm/v3/pkg/release"
 	helmtime "helm.sh/helm/v3/pkg/time"
-	core "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/klog/v2"
 	"kmodules.xyz/client-go/tools/parser"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
@@ -47,6 +46,14 @@ import (
 )
 
 var empty = struct{}{}
+
+func mustNewAppReleaseObject(rls *rspb.Release) *driversapi.AppRelease {
+	out, err := newAppReleaseObject(rls)
+	if err != nil {
+		panic(err)
+	}
+	return out
+}
 
 // newAppReleaseSecretsObject constructs a kubernetes AppRelease object
 // to store a release. Each configmap data entry is the base64
@@ -60,13 +67,8 @@ var empty = struct{}{}
 //	"status"         - status of the release (see pkg/release/status.go for variants)
 //	"owner"          - owner of the configmap, currently "helm".
 //	"name"           - name of the release.
-func newAppReleaseObject(rls *rspb.Release) *driversapi.AppRelease {
+func newAppReleaseObject(rls *rspb.Release) (*driversapi.AppRelease, error) {
 	const owner = "helm"
-
-	/*
-		LabelChartFirstDeployed = "first-deployed.meta.helm.sh/"
-		LabelChartLastDeployed  = "last-deployed.meta.helm.sh/"
-	*/
 
 	appName := rls.Name
 	if partOf, ok := rls.Chart.Metadata.Annotations["app.kubernetes.io/part-of"]; ok {
@@ -78,15 +80,11 @@ func newAppReleaseObject(rls *rspb.Release) *driversapi.AppRelease {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      appName,
 			Namespace: rls.Namespace,
+			// labels are required by https://github.com/x-helm/helm/blob/ac-1.25.1/pkg/storage/storage.go#L140-L144
 			Labels: map[string]string{
-				"owner":                                  owner,
-				"name.release.x-helm.dev/" + rls.Name:    rls.Name,
-				"status.release.x-helm.dev/" + rls.Name:  release.StatusDeployed.String(),
-				"version.release.x-helm.dev/" + rls.Name: strconv.Itoa(rls.Version),
-			},
-			Annotations: map[string]string{
-				"first-deployed.release.x-helm.dev/" + rls.Name: rls.Info.FirstDeployed.UTC().Format(time.RFC3339),
-				"last-deployed.release.x-helm.dev/" + rls.Name:  rls.Info.LastDeployed.UTC().Format(time.RFC3339),
+				"owner":                 owner,
+				labelScopeReleaseName:   rls.Name,
+				labelScopeReleaseStatus: release.StatusDeployed.String(),
 			},
 		},
 		Spec: driversapi.AppReleaseSpec{
@@ -104,10 +102,17 @@ func newAppReleaseObject(rls *rspb.Release) *driversapi.AppRelease {
 				},
 				Notes: rls.Info.Notes,
 			},
-			ComponentGroupKinds: nil,
-			Selector:            nil,
-			AddOwnerRef:         false, // TODO
-			AssemblyPhase:       toAssemblyPhase(rls.Info.Status),
+			Release: driversapi.ReleaseInfo{
+				Name:    rls.Name,
+				Version: strconv.Itoa(rls.Version),
+				Status:  release.StatusDeployed.String(),
+				// Status:        string(rls.Info.Status),
+				FirstDeployed: &metav1.Time{Time: rls.Info.FirstDeployed.Time.UTC()},
+				LastDeployed:  &metav1.Time{Time: rls.Info.LastDeployed.Time.UTC()},
+			},
+			Components:   nil,
+			Selector:     nil,
+			ResourceKeys: nil,
 		},
 	}
 	if rls.Chart.Metadata.Icon != "" {
@@ -134,78 +139,73 @@ func newAppReleaseObject(rls *rspb.Release) *driversapi.AppRelease {
 		})
 	}
 
+	if data, ok := rls.Chart.Metadata.Annotations["meta.x-helm.dev/editor"]; ok && data != "" {
+		var gvr metav1.GroupVersionResource
+		if err := json.Unmarshal([]byte(data), &gvr); err != nil {
+			return nil, err
+		} else {
+			obj.Spec.Editor = &gvr
+		}
+	}
+
 	//lbl := map[string]string{
 	//	"app.kubernetes.io/managed-by": "Helm",
 	//}
-	lbl := make(map[string]string)
+	lbl := map[string]string{}
 	if partOf, ok := rls.Chart.Metadata.Annotations["app.kubernetes.io/part-of"]; ok && partOf != "" {
 		lbl["app.kubernetes.io/part-of"] = partOf
 	} else {
 		lbl["app.kubernetes.io/instance"] = rls.Name
 
-		// ref : https://github.com/kubepack/helm/blob/ac-1.21.0/pkg/action/validate.go#L208-L214
-		if data, ok := rls.Chart.Metadata.Annotations["meta.x-helm.dev/editor"]; ok && data != "" {
-			var gvr metav1.GroupVersionResource
-			if err := json.Unmarshal([]byte(data), &gvr); err == nil {
-				lbl["app.kubernetes.io/name"] = fmt.Sprintf("%s.%s", gvr.Resource, gvr.Group)
-			}
+		// ref : https://github.com/x-helm/helm/blob/ac-1.25.1/pkg/action/validate.go#L211-L217
+		if obj.Spec.Editor != nil {
+			lbl["app.kubernetes.io/name"] = fmt.Sprintf("%s.%s", obj.Spec.Editor.Resource, obj.Spec.Editor.Group)
 		}
 	}
 	obj.Spec.Selector = &metav1.LabelSelector{
 		MatchLabels: lbl,
 	}
 
-	if editorGVR, ok := rls.Chart.Metadata.Annotations["meta.x-helm.dev/editor"]; ok {
-		obj.Annotations["editor.x-helm.dev/"+rls.Name] = editorGVR
-
+	if obj.Spec.Editor != nil {
 		if f, ok := rls.Config["form"]; ok {
 			if fd, err := json.Marshal(f); err == nil {
-				obj.Annotations["form.release.x-helm.dev/"+rls.Name] = string(fd)
+				obj.Spec.Release.Form = &runtime.RawExtension{Raw: fd}
 			}
 		}
+
+		obj.Spec.ResourceKeys = strings.Split(rls.Chart.Metadata.Annotations["meta.x-helm.dev/resource-keys"], ",")
 	}
 
-	components, _, err := parser.ExtractComponentGKs([]byte(rls.Manifest))
+	components, _, err := parser.ExtractComponentGVKs([]byte(rls.Manifest))
 	if err != nil {
 		// WARNING(tamal): This error should never happen
-		panic(err)
+		return nil, err
 	}
 
+	// TODO(tamal): Should it be merged or be if/else based on whether it is an editor chart
 	if data, ok := rls.Chart.Metadata.Annotations["meta.x-helm.dev/resources"]; ok && data != "" {
-		var gks []metav1.GroupKind
-		err := yaml.Unmarshal([]byte(data), &gks)
+		var gvks []metav1.GroupVersionKind
+		err := yaml.Unmarshal([]byte(data), &gvks)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
-		for _, gk := range gks {
-			components[gk] = empty
+		for _, gvk := range gvks {
+			components[gvk] = empty
 		}
 	}
-	gks := make([]metav1.GroupKind, 0, len(components))
-	for gk := range components {
-		gks = append(gks, gk)
+	gvks := make([]metav1.GroupVersionKind, 0, len(components))
+	for gvk := range components {
+		gvks = append(gvks, gvk)
 	}
-	sort.Slice(gks, func(i, j int) bool {
-		if gks[i].Group == gks[j].Group {
-			return gks[i].Kind < gks[j].Kind
+	sort.Slice(gvks, func(i, j int) bool {
+		if gvks[i].Group == gvks[j].Group {
+			return gvks[i].Kind < gvks[j].Kind
 		}
-		return gks[i].Group < gks[j].Group
+		return gvks[i].Group < gvks[j].Group
 	})
-	obj.Spec.ComponentGroupKinds = gks
+	obj.Spec.Components = gvks
 
-	return obj
-}
-
-func toAssemblyPhase(status release.Status) driversapi.AppReleaseAssemblyPhase {
-	switch status {
-	case release.StatusUnknown, release.StatusUninstalling, release.StatusPendingInstall, release.StatusPendingUpgrade, release.StatusPendingRollback:
-		return driversapi.Pending
-	case release.StatusDeployed, release.StatusUninstalled, release.StatusSuperseded:
-		return driversapi.Succeeded
-	case release.StatusFailed:
-		return driversapi.Failed
-	}
-	panic(fmt.Sprintf("unknown status: %s", status.String()))
+	return obj, nil
 }
 
 // decodeRelease decodes the bytes of data into a release
@@ -221,9 +221,9 @@ func decodeReleaseFromApp(kc client.Client, app *driversapi.AppRelease, rlsNames
 	for _, rlsName := range rlsNames {
 		var rls rspb.Release
 
-		rls.Name = app.Labels["name.release.x-helm.dev/"+rlsName]
+		rls.Name = rlsName
 		rls.Namespace = app.Namespace
-		rls.Version, _ = strconv.Atoi(app.Labels["version.release.x-helm.dev/"+rlsName])
+		rls.Version, _ = strconv.Atoi(app.Spec.Release.Version)
 
 		// This is not needed or used from release
 		//chartURL, ok := app.Annotations[apis.LabelChartURL]
@@ -246,21 +246,13 @@ func decodeReleaseFromApp(kc client.Client, app *driversapi.AppRelease, rlsNames
 
 		rls.Info = &release.Info{
 			Description: app.Spec.Descriptor.Description,
-			Status:      release.Status(app.Labels["status.release.x-helm.dev/"+rlsName]),
+			Status:      release.Status(app.Spec.Release.Status),
 			Notes:       app.Spec.Descriptor.Notes,
 		}
-		rls.Info.FirstDeployed, _ = helmtime.Parse(time.RFC3339, app.Annotations["first-deployed.release.x-helm.dev/"+rlsName])
-		rls.Info.LastDeployed, _ = helmtime.Parse(time.RFC3339, app.Annotations["last-deployed.release.x-helm.dev/"+rlsName])
+		rls.Info.FirstDeployed = helmtime.Time{Time: app.Spec.Release.FirstDeployed.Time}
+		rls.Info.LastDeployed = helmtime.Time{Time: app.Spec.Release.LastDeployed.Time}
 
-		var editorGVR *metav1.GroupVersionResource
-		if data, ok := app.Annotations["editor.x-helm.dev/"+rlsName]; ok && data != "" {
-			var gvr metav1.GroupVersionResource
-			err := yaml.Unmarshal([]byte(data), gvr)
-			if err != nil {
-				return nil, fmt.Errorf("editor.x-helm.dev/%s is not a valid GVR, reason %v", rlsName, err)
-			}
-			editorGVR = &gvr
-		}
+		editorGVR := app.Spec.Editor
 		rlm := types.NamespacedName{
 			Name:      rls.Name,
 			Namespace: rls.Namespace,
@@ -276,9 +268,8 @@ func decodeReleaseFromApp(kc client.Client, app *driversapi.AppRelease, rlsNames
 			rls.Chart = &chart.Chart{
 				Values: map[string]interface{}{},
 			}
-			if f, ok := app.Annotations["form.release.x-helm.dev/"+rls.Name]; ok {
-				var form map[string]interface{}
-				if err = json.Unmarshal([]byte(f), &form); err == nil {
+			if app.Spec.Release.Form != nil {
+				if form, err := runtime.DefaultUnstructuredConverter.ToUnstructured(app.Spec.Release.Form); err == nil {
 					tpl.Values.Object["form"] = form
 				}
 			}
@@ -287,7 +278,7 @@ func decodeReleaseFromApp(kc client.Client, app *driversapi.AppRelease, rlsNames
 		}
 		// else
 		// keep tls.Chart nil and see if that causes panics
-		// we don't want to load chart from remote here any more, because we want to embed chart in Go binary
+		// we don't want to load chart from remote here anymore, because we want to embed chart in Go binary
 
 		releases = append(releases, &rls)
 	}
@@ -307,61 +298,38 @@ func EditorChartValueManifest(kc client.Client, app *driversapi.AppRelease, rls 
 
 	var buf bytes.Buffer
 	resourceMap := map[string]interface{}{}
+	resourceKeys := sets.NewString(app.Spec.ResourceKeys...)
 
-	for _, gk := range app.Spec.ComponentGroupKinds {
-		mapping, err := kc.RESTMapper().RESTMapping(schema.GroupKind{
-			Group: gk.Group,
-			Kind:  gk.Kind,
-			// Version: "", // use the preferred version
-		})
-		if err != nil {
-			klog.Warningf("failed to detect GVR for gk %v, reason %v", gk, err)
-			continue
-		}
-		gvr := mapping.Resource
-
+	for _, gvk := range app.Spec.Components {
 		var list unstructured.UnstructuredList
-		list.SetGroupVersionKind(mapping.GroupVersionKind)
+		list.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   gvk.Group,
+			Version: gvk.Version,
+			Kind:    gvk.Kind,
+		})
 		err = kc.List(context.TODO(), &list, client.InNamespace(rls.Namespace), client.MatchingLabelsSelector{Selector: selector})
 		if err != nil {
 			return nil, err
 		}
 		for _, obj := range list.Items {
-			// check ownership
+			rsKey, err := ResourceKey(obj.GetAPIVersion(), obj.GetKind(), rls.Name, obj.GetName())
+			if err != nil {
+				return nil, err
+			}
+
+			// skip ownership check for ui-wizards
 			// https://github.com/kubepack/helm/blob/ac-1.21.0/pkg/action/validate.go#L87-L92
-
-			annotationMap := obj.GetAnnotations()
-			if v := annotationMap["meta.helm.sh/release-name"]; v != rls.Name {
-				continue
-			}
-			if v := annotationMap["meta.helm.sh/release-namespace"]; v != rls.Namespace {
-				continue
-			}
-
-			// check that we got the right version
-			if v, ok := annotationMap[core.LastAppliedConfigAnnotation]; !ok {
-				return nil, fmt.Errorf("failed to detect version for GK %#v in release %v", gk, rls)
+			if editorGVR == nil {
+				annotationMap := obj.GetAnnotations()
+				if v := annotationMap["meta.helm.sh/release-name"]; v != rls.Name {
+					continue
+				}
+				if v := annotationMap["meta.helm.sh/release-namespace"]; v != rls.Namespace {
+					continue
+				}
 			} else {
-				var mt metav1.TypeMeta
-				err := json.Unmarshal([]byte(v), &mt)
-				if err != nil {
-					return nil, fmt.Errorf("failed to parse TypeMeta from %s", v)
-				}
-				gv, err := schema.ParseGroupVersion(mt.APIVersion)
-				if err != nil {
-					return nil, fmt.Errorf("failed to parse version from %v for %s", mt.APIVersion, v)
-				}
-				if gv.Version != gvr.Version {
-					// object not using preferred version, so we need to load the correct version again
-
-					var o2 unstructured.Unstructured
-					o2.SetGroupVersionKind(mapping.GroupVersionKind)
-					o2.SetAPIVersion(gv.Version)
-					err = kc.Get(context.TODO(), client.ObjectKeyFromObject(&obj), &o2)
-					if err != nil {
-						return nil, fmt.Errorf("failed to get object with correct apiVersion, reason %v", err)
-					}
-					obj = o2
+				if resourceKeys.Len() > 0 && !resourceKeys.Has(rsKey) {
+					continue
 				}
 			}
 
@@ -375,10 +343,6 @@ func EditorChartValueManifest(kc client.Client, app *driversapi.AppRelease, rls 
 			}
 			buf.Write(data)
 
-			rsKey, err := ResourceKey(obj.GetAPIVersion(), obj.GetKind(), rls.Name, obj.GetName())
-			if err != nil {
-				return nil, err
-			}
 			if _, ok := resourceMap[rsKey]; ok {
 				return nil, fmt.Errorf("duplicate resource key %s for AppRelease %s/%s", rsKey, app.Namespace, app.Name)
 			}

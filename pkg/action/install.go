@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	ha "helm.sh/helm/v3/pkg/action"
@@ -155,6 +156,8 @@ func (x *Installer) Run() (*release.Release, *engine.State, error) {
 		if err := RefillMetadata(kc, chrt.Chart.Values, vals, gvr, rls); err != nil {
 			return nil, nil, err
 		}
+
+		chrt.Chart.Metadata.Annotations["meta.x-helm.dev/resource-keys"] = strings.Join(ExtractResourceKeys(chrt.Chart.Values), ",")
 	}
 	// chartutil.CoalesceValues(chrt, chrtVals) will use vals to render templates
 	chrt.Chart.Values = map[string]interface{}{}
