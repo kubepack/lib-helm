@@ -38,7 +38,8 @@ import (
 )
 
 const (
-	annotaionScopeReleaseName = "name.release.x-helm.dev" // "/${name}" : ""
+	labelScopeReleaseName   = "release.x-helm.dev/name"
+	labelScopeReleaseStatus = "release.x-helm.dev/status"
 )
 
 var _ driver.Driver = (*AppReleases)(nil)
@@ -77,7 +78,7 @@ func (d *AppReleases) Get(key string) (*rspb.Release, error) {
 
 	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{
 		MatchLabels: map[string]string{
-			fmt.Sprintf("%s/%s", annotaionScopeReleaseName, relName): relName,
+			labelScopeReleaseName: relName,
 		},
 	})
 	if err != nil {
@@ -108,13 +109,13 @@ func (d *AppReleases) Get(key string) (*rspb.Release, error) {
 	obj := &result.Items[0]
 
 	// found the configmap, decode the base64 data string
-	r, err := decodeReleaseFromApp(d.kc, obj, []string{relName})
+	rls, err := decodeReleaseFromApp(d.kc, obj)
 	if err != nil {
 		d.Log("get: failed to decode data %q: %s", key, err)
 		return nil, err
 	}
 	// return the release object
-	return r[0], nil
+	return rls, nil
 }
 
 // List fetches all releases and returns the list releases such
@@ -135,15 +136,13 @@ func (d *AppReleases) List(filter func(*rspb.Release) bool) ([]*rspb.Release, er
 	// iterate over the configmaps object list
 	// and decode each release
 	for _, item := range list.Items {
-		releases, err := decodeReleaseFromApp(d.kc, &item, nil)
+		rls, err := decodeReleaseFromApp(d.kc, &item)
 		if err != nil {
 			d.Log("list: failed to decode release: %v: %s", item, err)
 			continue
 		}
-		for _, rls := range releases {
-			if filter(rls) {
-				results = append(results, rls)
-			}
+		if filter(rls) {
+			results = append(results, rls)
 		}
 	}
 	return results, nil
@@ -173,12 +172,12 @@ func (d *AppReleases) Query(labels map[string]string) ([]*rspb.Release, error) {
 
 	var results []*rspb.Release
 	for _, item := range list.Items {
-		releases, err := decodeReleaseFromApp(d.kc, &item, relevantReleases(labels))
+		rls, err := decodeReleaseFromApp(d.kc, &item)
 		if err != nil {
 			d.Log("query: failed to decode release: %s", err)
 			continue
 		}
-		results = append(results, releases...)
+		results = append(results, rls)
 	}
 	return results, nil
 }
@@ -187,7 +186,7 @@ func (d *AppReleases) Query(labels map[string]string) ([]*rspb.Release, error) {
 // AppRelease already exists, ErrReleaseExists is returned.
 func (d *AppReleases) Create(_ string, rls *rspb.Release) error {
 	// create a new configmap to hold the release
-	obj := newAppReleaseObject(rls)
+	obj := mustNewAppReleaseObject(rls)
 
 	// push the configmap object out into the kubiverse
 	_, _, err := cu.CreateOrPatch(context.Background(), d.kc, obj, func(o client.Object, createOp bool) client.Object {
@@ -197,30 +196,30 @@ func (d *AppReleases) Create(_ string, rls *rspb.Release) error {
 		in.Annotations = meta_util.OverwriteKeys(in.Annotations, obj.Annotations)
 
 		// merge GKs
-		gkMap := map[metav1.GroupKind]interface{}{}
-		for _, gk := range in.Spec.ComponentGroupKinds {
-			gkMap[gk] = empty
+		gvkMap := map[metav1.GroupVersionKind]interface{}{}
+		for _, gvk := range in.Spec.Components {
+			gvkMap[gvk] = empty
 		}
-		for _, gk := range obj.Spec.ComponentGroupKinds {
-			gkMap[gk] = empty
+		for _, gvk := range obj.Spec.Components {
+			gvkMap[gvk] = empty
 		}
-		gks := make([]metav1.GroupKind, 0, len(gkMap))
-		for gk := range gkMap {
-			gks = append(gks, gk)
+		gvks := make([]metav1.GroupVersionKind, 0, len(gvkMap))
+		for gk := range gvkMap {
+			gvks = append(gvks, gk)
 		}
-		sort.Slice(gks, func(i, j int) bool {
-			if gks[i].Group == gks[j].Group {
-				return gks[i].Kind < gks[j].Kind
+		sort.Slice(gvks, func(i, j int) bool {
+			if gvks[i].Group == gvks[j].Group {
+				return gvks[i].Kind < gvks[j].Kind
 			}
-			return gks[i].Group < gks[j].Group
+			return gvks[i].Group < gvks[j].Group
 		})
 
 		if err := mergo.Merge(&in.Spec, &obj.Spec); err != nil {
 			panic(fmt.Errorf("failed to update appliation %s/%s spec, reason: %v", in.Namespace, in.Name, err))
 		}
 		in.Spec.Selector = obj.Spec.Selector
-		in.Spec.ComponentGroupKinds = gks
-		in.Spec.AssemblyPhase = obj.Spec.AssemblyPhase
+		in.Spec.Components = gvks
+		in.Spec.Release = obj.Spec.Release
 		return in
 	})
 	if err != nil {
@@ -244,8 +243,8 @@ func (d *AppReleases) Update(_ string, rls *rspb.Release) error {
 	}
 
 	// create a new configmap object to hold the release
-	obj := newAppReleaseObject(rls)
-	obj.Annotations["modified-at.release.x-helm.dev/"+rls.Name] = time.Now().UTC().Format(time.RFC3339)
+	obj := mustNewAppReleaseObject(rls)
+	obj.Spec.Release.ModifiedAt = &metav1.Time{Time: time.Now().UTC()}
 
 	// push the configmap object out into the kubiverse
 	_, _, err := cu.CreateOrPatch(context.Background(), d.kc, obj, func(o client.Object, createOp bool) client.Object {
@@ -256,7 +255,7 @@ func (d *AppReleases) Update(_ string, rls *rspb.Release) error {
 		if err := mergo.Merge(&in.Spec, &obj.Spec); err != nil {
 			panic(fmt.Errorf("failed to update appliation %s/%s spec, reason: %v", in.Namespace, in.Name, err))
 		}
-		in.Spec.AssemblyPhase = obj.Spec.AssemblyPhase
+		in.Spec.Release = obj.Spec.Release
 		return in
 	})
 	if err != nil {
@@ -285,7 +284,7 @@ func (d *AppReleases) Delete(key string) (rls *rspb.Release, err error) {
 		return nil, err
 	}
 	if err = d.kc.DeleteAllOf(context.Background(), new(driversapi.AppRelease), client.MatchingLabels{
-		fmt.Sprintf("%s/%s", annotaionScopeReleaseName, relName): relName,
+		labelScopeReleaseName: relName,
 	}); err != nil {
 		return rls, err
 	}
