@@ -34,12 +34,16 @@ import (
 	"helm.sh/helm/v3/pkg/release"
 	rspb "helm.sh/helm/v3/pkg/release"
 	helmtime "helm.sh/helm/v3/pkg/time"
+	crd_cs "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/rest"
+	"kmodules.xyz/client-go/apiextensions"
+	disco_util "kmodules.xyz/client-go/discovery"
 	"kmodules.xyz/client-go/tools/parser"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
@@ -551,4 +555,27 @@ func GenerateAppReleaseObject(chrt *chart.Chart, model releasesapi.Metadata) (*d
 	}
 
 	return obj, nil
+}
+
+func EnsureAppReleaseCRD(restcfg *rest.Config, mapper meta.RESTMapper) error {
+	rsmapper := disco_util.NewResourceMapper(mapper)
+	appcrdRegistered, err := rsmapper.ExistsGVR(driversapi.GroupVersion.WithResource("appreleases"))
+	if err != nil {
+		return fmt.Errorf("failed to detect if AppRelease CRD is registered, reason %v", err)
+	}
+	if !appcrdRegistered {
+		// register AppRelease CRD
+		crds := []*apiextensions.CustomResourceDefinition{
+			driversapi.AppRelease{}.CustomResourceDefinition(),
+		}
+		crdClient, err := crd_cs.NewForConfig(restcfg)
+		if err != nil {
+			return fmt.Errorf("failed to create crd client, reason %v", err)
+		}
+		err = apiextensions.RegisterCRDs(crdClient, crds)
+		if err != nil {
+			return fmt.Errorf("failed to register appRelease crd, reason %v", err)
+		}
+	}
+	return nil
 }
