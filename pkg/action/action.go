@@ -70,7 +70,7 @@ func (c *Configuration) Init(getter genericclioptions.RESTClientGetter, namespac
 		namespace: namespace,
 		kcFn:      factory.KubernetesClientSet,
 		kbFn: func() (client.Client, error) {
-			config, err := factory.ToRawKubeConfigLoader().ClientConfig()
+			config, err := getter.ToRESTConfig()
 			if err != nil {
 				return nil, err
 			}
