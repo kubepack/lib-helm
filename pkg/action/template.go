@@ -92,6 +92,16 @@ func (x *Renderer) WithRegistry(reg repo.IRegistry) *Renderer {
 	return x
 }
 
+func (x *Renderer) WithReleaseName(name string) *Renderer {
+	x.opts.ReleaseName = name
+	return x
+}
+
+func (x *Renderer) WithNamespace(ns string) *Renderer {
+	x.opts.Namespace = ns
+	return x
+}
+
 func (x *Renderer) Run() (string, map[string][]string, error) {
 	cmd := ha.NewInstall(x.cfg)
 	var extraAPIs []string
