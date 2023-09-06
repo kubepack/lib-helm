@@ -15,3 +15,11 @@ spec:
     name: pgbouncersettings
     scope: Namespaced
     version: v1alpha1
+  ui:
+    editor:
+      name: uikubedbcom-pgbouncersettings-editor
+      sourceRef:
+        apiGroup: source.toolkit.fluxcd.io
+        kind: HelmRepository
+        name: bytebuilders-ui
+      version: sha256:b6c95a6eff84050794033b80a3a438d0ad4e09bb48e24e3ff48b1c58c7325ae1

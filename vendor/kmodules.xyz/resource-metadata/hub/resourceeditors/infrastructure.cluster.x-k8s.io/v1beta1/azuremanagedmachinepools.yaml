@@ -15,3 +15,11 @@ spec:
     name: azuremanagedmachinepools
     scope: Namespaced
     version: v1beta1
+  ui:
+    editor:
+      name: infrastructureclusterxk8sio-azuremanagedmachinepool-editor
+      sourceRef:
+        apiGroup: source.toolkit.fluxcd.io
+        kind: HelmRepository
+        name: bytebuilders-ui
+      version: sha256:1a6a2049e0de2c6623f8aeedb818104299a4674c4e79aadd4f108c7b974c5810
