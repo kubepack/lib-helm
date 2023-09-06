@@ -27,4 +27,4 @@ spec:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: bytebuilders-ui
-      version: v0.4.14
+      version: sha256:ea850152fb2b24dfee34137749bec0497176cfa8f21ff2ddd8a090893f1ef4d8

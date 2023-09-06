@@ -46,8 +46,8 @@ type ChartPresetFlatRef struct {
 
 	// Editor GVR
 	Group      string `json:"group,omitempty"`
-	Version    string `json:"version,omitempty"`
 	Resource   string `json:"resource,omitempty"`
+	Kind       string `json:"kind,omitempty"`
 	PresetName string `json:"presetName,omitempty"`
 	Namespace  string `json:"namespace,omitempty"`
 }

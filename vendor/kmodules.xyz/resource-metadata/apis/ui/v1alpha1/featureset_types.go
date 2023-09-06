@@ -17,9 +17,9 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"kmodules.xyz/resource-metadata/apis/shared"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	releasesapi "x-helm.dev/apimachinery/apis/releases/v1alpha1"
+	helmshared "x-helm.dev/apimachinery/apis/shared"
 )
 
 const (
@@ -55,7 +55,7 @@ type FeatureSetSpec struct {
 	Description string `json:"description"`
 	// Icons is an optional list of icons for an application. Icon information includes the source, size,
 	// and mime type. These icons will be used in UI.
-	Icons []shared.ImageSpec `json:"icons,omitempty"`
+	Icons []helmshared.ImageSpec `json:"icons,omitempty"`
 	// Required specify whether this feature set is mandatory or not for using the UI.
 	// +optional
 	Required bool `json:"required,omitempty"`
@@ -63,7 +63,7 @@ type FeatureSetSpec struct {
 	// +optional
 	RequiredFeatures []string `json:"requiredFeatures,omitempty"`
 	// Chart specifies the chart that contains the respective resources for component features and the UI wizard.
-	Chart shared.ExpandedChartRepoRef `json:"chart"`
+	Chart releasesapi.ChartSourceRef `json:"chart"`
 }
 
 type FeatureSetStatus struct {
@@ -76,6 +76,9 @@ type FeatureSetStatus struct {
 	// Features specifies the status of the component features that belong to this feature set.
 	// +optional
 	Features []ComponentStatus `json:"features,omitempty"`
+	// Dependents specifies the feature sets which depend on this FeatureSet
+	// +optional
+	Dependents Dependents `json:"dependents,omitempty"`
 	// Note specifies the respective reason if the feature set is considered as disabled.
 	// +optional
 	Note string `json:"note,omitempty"`
@@ -93,6 +96,19 @@ type ComponentStatus struct {
 	// Managed specifies whether the component is managed by platform or not.
 	// +optional
 	Managed *bool `json:"managed,omitempty"`
+}
+
+type Dependents struct {
+	// FeatureSets specifies a list of FeatureSet names that depend on this FeatureSet
+	// +optional
+	FeatureSets []DependentFeatureSet `json:"featureSets,omitempty"`
+}
+
+type DependentFeatureSet struct {
+	// Name specifies the name of the dependent FeatureSet
+	Name string `json:"name,omitempty"`
+	// Features specifies the Feature names of the dependent FeatureSet
+	Features []string `json:"features,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
