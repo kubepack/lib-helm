@@ -201,7 +201,7 @@ github.com/containerd/containerd/remotes/docker/auth
 github.com/containerd/containerd/remotes/docker/schema1
 github.com/containerd/containerd/remotes/errors
 github.com/containerd/containerd/version
-# github.com/cyphar/filepath-securejoin v0.2.3
+# github.com/cyphar/filepath-securejoin v0.2.4
 ## explicit; go 1.13
 github.com/cyphar/filepath-securejoin
 # github.com/davecgh/go-spew v1.1.1
@@ -792,7 +792,7 @@ gopkg.in/yaml.v2
 gopkg.in/yaml.v3
 # gotest.tools/v3 v3.1.0
 ## explicit; go 1.11
-# helm.sh/helm/v3 v3.10.3 => github.com/x-helm/helm/v3 v3.10.2-0.20230503230011-a8f5ce951c95
+# helm.sh/helm/v3 v3.10.3 => github.com/x-helm/helm/v3 v3.10.2-0.20230910175645-ad538d5bfc73
 ## explicit; go 1.18
 helm.sh/helm/v3/internal/fileutil
 helm.sh/helm/v3/internal/ignore
@@ -1373,4 +1373,4 @@ x-helm.dev/apimachinery/apis/products/v1alpha1
 x-helm.dev/apimachinery/apis/releases/v1alpha1
 x-helm.dev/apimachinery/apis/shared
 x-helm.dev/apimachinery/crds
-# helm.sh/helm/v3 => github.com/x-helm/helm/v3 v3.10.2-0.20230503230011-a8f5ce951c95
+# helm.sh/helm/v3 => github.com/x-helm/helm/v3 v3.10.2-0.20230910175645-ad538d5bfc73
