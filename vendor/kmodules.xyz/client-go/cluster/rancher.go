@@ -18,15 +18,12 @@ package cluster
 
 import (
 	"context"
-	"errors"
-
-	"kmodules.xyz/client-go/apis/management/v1alpha1"
+	"sort"
 
 	core "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -42,17 +39,33 @@ func IsRancherManaged(mapper meta.RESTMapper) bool {
 	return false
 }
 
-func IsRancherSystemResource(kc client.Client, key types.NamespacedName) (bool, error) {
-	if !IsRancherManaged(kc.RESTMapper()) {
-		return false, errors.New("not a Rancher managed cluster")
-	}
+func IsInDefaultProject(kc client.Client, nsName string) (bool, error) {
+	return isInProject(kc, nsName, metav1.NamespaceDefault)
+}
 
-	if key.Namespace == metav1.NamespaceSystem {
+func IsInSystemProject(kc client.Client, nsName string) (bool, error) {
+	return isInProject(kc, nsName, metav1.NamespaceSystem)
+}
+
+func IsInUserProject(kc client.Client, nsName string) (bool, error) {
+	isDefault, err := IsInDefaultProject(kc, nsName)
+	if err != nil {
+		return false, err
+	}
+	isSys, err := IsInSystemProject(kc, nsName)
+	if err != nil {
+		return false, err
+	}
+	return !isDefault && !isSys, nil
+}
+
+func isInProject(kc client.Client, nsName, seedNS string) (bool, error) {
+	if nsName == seedNS {
 		return true, nil
 	}
 
 	var ns core.Namespace
-	err := kc.Get(context.TODO(), client.ObjectKey{Name: key.Namespace}, &ns)
+	err := kc.Get(context.TODO(), client.ObjectKey{Name: nsName}, &ns)
 	if err != nil {
 		return false, err
 	}
@@ -61,102 +74,58 @@ func IsRancherSystemResource(kc client.Client, key types.NamespacedName) (bool, 
 		return false, nil
 	}
 
-	var sysNS core.Namespace
-	err = kc.Get(context.TODO(), client.ObjectKey{Name: metav1.NamespaceSystem}, &sysNS)
+	seedProjectId, _, err := GetProjectId(kc, seedNS)
 	if err != nil {
 		return false, err
 	}
-
-	sysProjectId, exists := ns.Labels[LabelKeyRancherProjectId]
-	if !exists {
-		return false, nil
-	}
-	return projectId == sysProjectId, nil
+	return projectId == seedProjectId, nil
 }
 
-func ListRancherProjects(kc client.Client) ([]v1alpha1.Project, error) {
-	var list core.NamespaceList
-	err := kc.List(context.TODO(), &list)
-	if meta.IsNoMatchError(err) {
-		return nil, nil
-	} else if err != nil {
+func GetDefaultProjectId(kc client.Client) (string, bool, error) {
+	return GetProjectId(kc, metav1.NamespaceDefault)
+}
+
+func GetSystemProjectId(kc client.Client) (string, bool, error) {
+	return GetProjectId(kc, metav1.NamespaceSystem)
+}
+
+func GetProjectId(kc client.Client, nsName string) (string, bool, error) {
+	var ns core.Namespace
+	err := kc.Get(context.TODO(), client.ObjectKey{Name: nsName}, &ns)
+	if err != nil {
+		return "", false, err
+	}
+	projectId, found := ns.Labels[LabelKeyRancherProjectId]
+	return projectId, found, nil
+}
+
+func ListSiblingNamespaces(kc client.Client, nsName string) ([]core.Namespace, error) {
+	projectId, found, err := GetProjectId(kc, nsName)
+	if err != nil || !found {
 		return nil, err
 	}
-
-	projects := map[string]v1alpha1.Project{}
-	for _, ns := range list.Items {
-		projectId, exists := ns.Labels[LabelKeyRancherProjectId]
-		if !exists {
-			continue
-		}
-
-		project, exists := projects[projectId]
-		if !exists {
-			project = v1alpha1.Project{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: projectId,
-				},
-				Spec: v1alpha1.ProjectSpec{
-					Type:       v1alpha1.ProjectUser,
-					Namespaces: nil,
-					NamespaceSelector: &metav1.LabelSelector{
-						MatchLabels: map[string]string{
-							LabelKeyRancherProjectId: projectId,
-						},
-					},
-					// Quota: core.ResourceRequirements{},
-				},
-			}
-		}
-		if ns.Name == metav1.NamespaceDefault {
-			project.Spec.Type = v1alpha1.ProjectDefault
-		} else if ns.Name == metav1.NamespaceSystem {
-			project.Spec.Type = v1alpha1.ProjectSystem
-		}
-		project.Spec.Namespaces = append(project.Spec.Namespaces, ns.Name)
-
-		projects[projectId] = project
-	}
-
-	result := make([]v1alpha1.Project, 0, len(projects))
-	for _, p := range projects {
-		result = append(result, p)
-	}
-	return result, nil
+	return ListProjectNamespaces(kc, projectId)
 }
 
-func GetRancherProject(kc client.Client, name string) (*v1alpha1.Project, error) {
+func ListProjectNamespaces(kc client.Client, projectId string) ([]core.Namespace, error) {
 	var list core.NamespaceList
 	err := kc.List(context.TODO(), &list, client.MatchingLabels{
-		LabelKeyRancherProjectId: name,
+		LabelKeyRancherProjectId: projectId,
 	})
 	if err != nil {
 		return nil, err
 	}
+	namespaces := list.Items
+	sort.Slice(namespaces, func(i, j int) bool {
+		return namespaces[i].Name < namespaces[j].Name
+	})
+	return namespaces, nil
+}
 
-	project := v1alpha1.Project{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
-		Spec: v1alpha1.ProjectSpec{
-			Type:       v1alpha1.ProjectUser,
-			Namespaces: nil,
-			NamespaceSelector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					LabelKeyRancherProjectId: name,
-				},
-			},
-			// Quota: core.ResourceRequirements{},
-		},
+func Names(in []core.Namespace) (ret []string) {
+	ret = make([]string, 0, len(in))
+	for _, ns := range in {
+		ret = append(ret, ns.Name)
 	}
-	for _, ns := range list.Items {
-		if ns.Name == metav1.NamespaceDefault {
-			project.Spec.Type = v1alpha1.ProjectDefault
-		} else if ns.Name == metav1.NamespaceSystem {
-			project.Spec.Type = v1alpha1.ProjectSystem
-		}
-		project.Spec.Namespaces = append(project.Spec.Namespaces, ns.Name)
-	}
-
-	return &project, nil
+	return
 }
