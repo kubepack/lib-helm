@@ -34,12 +34,12 @@ require (
 	k8s.io/kube-aggregator v0.25.1
 	k8s.io/kubectl v0.25.3
 	kmodules.xyz/apply v0.25.0
-	kmodules.xyz/client-go v0.25.32
-	kmodules.xyz/resource-metadata v0.17.16
+	kmodules.xyz/client-go v0.25.34-0.20230920051128-f758ec0276ab
+	kmodules.xyz/resource-metadata v0.17.18-0.20230918100651-224b4abd8776
 	sigs.k8s.io/cli-utils v0.34.0
 	sigs.k8s.io/controller-runtime v0.13.1
 	sigs.k8s.io/yaml v1.3.0
-	x-helm.dev/apimachinery v0.0.10
+	x-helm.dev/apimachinery v0.0.11-0.20230920073953-6834648fee5b
 )
 
 require (

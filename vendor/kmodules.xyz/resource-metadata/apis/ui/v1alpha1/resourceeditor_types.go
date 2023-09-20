@@ -33,7 +33,6 @@ const (
 
 // +genclient
 // +genclient:nonNamespaced
-// +genclient:skipVerbs=updateStatus
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
@@ -86,7 +85,6 @@ type ActionTemplate struct {
 }
 
 type VariantRef struct {
-	// +optional
 	Name        string                `json:"name"`
 	Title       string                `json:"title,omitempty"`
 	Description string                `json:"description,omitempty"`

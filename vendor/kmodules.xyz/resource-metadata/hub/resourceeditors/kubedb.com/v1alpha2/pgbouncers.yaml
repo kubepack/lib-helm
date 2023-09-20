@@ -27,16 +27,16 @@ spec:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: bytebuilders-ui
-      version: sha256:01624a356795a7b4d086d01def21a4cd02deb72090a7508c481eb201ee8811f8
+      version: v0.4.17
     options:
       name: kubedbcom-pgbouncer-editor-options
       sourceRef:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: bytebuilders-ui
-      version: sha256:779cadbc2b041a3be222e15e278abc38f6c396ee5cb787b9764983ed1d1c6cc3
+      version: v0.4.17
   variants:
-  - name: ""
+  - name: default
     selector:
       matchLabels:
-        cluster.x-k8s.io/is-default-preset: "true"
+        charts.x-helm.dev/is-default-preset: "true"
