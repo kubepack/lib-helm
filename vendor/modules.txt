@@ -1183,7 +1183,7 @@ kmodules.xyz/apiversion
 # kmodules.xyz/apply v0.25.0
 ## explicit; go 1.18
 kmodules.xyz/apply
-# kmodules.xyz/client-go v0.25.34-0.20230921001129-a3766b49003f
+# kmodules.xyz/client-go v0.25.34-0.20230921171922-af0189b22d8c
 ## explicit; go 1.18
 kmodules.xyz/client-go
 kmodules.xyz/client-go/api/v1

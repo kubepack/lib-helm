@@ -34,7 +34,7 @@ require (
 	k8s.io/kube-aggregator v0.25.1
 	k8s.io/kubectl v0.25.3
 	kmodules.xyz/apply v0.25.0
-	kmodules.xyz/client-go v0.25.34-0.20230921001129-a3766b49003f
+	kmodules.xyz/client-go v0.25.34-0.20230921171922-af0189b22d8c
 	kmodules.xyz/resource-metadata v0.17.18-0.20230918100651-224b4abd8776
 	sigs.k8s.io/cli-utils v0.34.0
 	sigs.k8s.io/controller-runtime v0.13.1
