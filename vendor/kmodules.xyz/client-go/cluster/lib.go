@@ -106,7 +106,7 @@ func getCAPIValues(values map[string]any) (string, string, string, error) {
 
 func getProviderName(kind string) string {
 	switch kind {
-	case "AWSManagedControlPlane":
+	case "AWSManagedCluster", "AWSManagedControlPlane":
 		return "capa"
 	case "AzureManagedCluster":
 		return "capz"
@@ -121,11 +121,23 @@ func DetectClusterManager(kc client.Client) kmapi.ClusterManager {
 	if IsACEManaged(kc) {
 		result |= kmapi.ClusterManagerACE
 	}
-	if IsOpenClusterManaged(kc.RESTMapper()) {
-		result |= kmapi.ClusterManagerOCM
+	if IsOpenClusterHub(kc.RESTMapper()) {
+		result |= kmapi.ClusterManagerOCMHub
+	}
+	if IsOpenClusterSpoke(kc.RESTMapper()) {
+		result |= kmapi.ClusterManagerOCMSpoke
+	}
+	if IsOpenClusterMulticlusterControlplane(kc.RESTMapper()) {
+		result |= kmapi.ClusterManagerOCMMulticlusterControlplane
 	}
 	if IsRancherManaged(kc.RESTMapper()) {
 		result |= kmapi.ClusterManagerRancher
+	}
+	if IsOpenShiftManaged(kc.RESTMapper()) {
+		result |= kmapi.ClusterManagerOpenShift
+	}
+	if MustIsVirtualCluster(kc) {
+		result |= kmapi.ClusterManagerVirtualCluster
 	}
 	return result
 }

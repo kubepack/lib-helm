@@ -53,17 +53,28 @@ type ClusterManager int
 
 const (
 	ClusterManagerACE ClusterManager = 1 << iota
-	ClusterManagerOCM
+	ClusterManagerOCMHub
+	ClusterManagerOCMSpoke
+	ClusterManagerOCMMulticlusterControlplane
 	ClusterManagerRancher
 	ClusterManagerOpenShift
+	ClusterManagerVirtualCluster
 )
 
 func (cm ClusterManager) ManagedByACE() bool {
 	return cm&ClusterManagerACE == ClusterManagerACE
 }
 
-func (cm ClusterManager) ManagedByOCM() bool {
-	return cm&ClusterManagerOCM == ClusterManagerOCM
+func (cm ClusterManager) ManagedByOCMHub() bool {
+	return cm&ClusterManagerOCMHub == ClusterManagerOCMHub
+}
+
+func (cm ClusterManager) ManagedByOCMSpoke() bool {
+	return cm&ClusterManagerOCMSpoke == ClusterManagerOCMSpoke
+}
+
+func (cm ClusterManager) ManagedByOCMMulticlusterControlplane() bool {
+	return cm&ClusterManagerOCMMulticlusterControlplane == ClusterManagerOCMMulticlusterControlplane
 }
 
 func (cm ClusterManager) ManagedByRancher() bool {
@@ -74,19 +85,32 @@ func (cm ClusterManager) ManagedByOpenShift() bool {
 	return cm&ClusterManagerOpenShift == ClusterManagerOpenShift
 }
 
+func (cm ClusterManager) ManagedByVirtualCluster() bool {
+	return cm&ClusterManagerVirtualCluster == ClusterManagerVirtualCluster
+}
+
 func (cm ClusterManager) Strings() []string {
-	out := make([]string, 0, 4)
+	out := make([]string, 0, 7)
 	if cm.ManagedByACE() {
 		out = append(out, "ACE")
 	}
-	if cm.ManagedByOCM() {
-		out = append(out, "OCM")
+	if cm.ManagedByOCMHub() {
+		out = append(out, "OCMHub")
+	}
+	if cm.ManagedByOCMSpoke() {
+		out = append(out, "OCMSpoke")
+	}
+	if cm.ManagedByOCMMulticlusterControlplane() {
+		out = append(out, "OCMMulticlusterControlplane")
 	}
 	if cm.ManagedByRancher() {
 		out = append(out, "Rancher")
 	}
 	if cm.ManagedByOpenShift() {
 		out = append(out, "OpenShift")
+	}
+	if cm.ManagedByVirtualCluster() {
+		out = append(out, "vcluster")
 	}
 	return out
 }
