@@ -88,6 +88,23 @@ func GetValuesDiffYAML(orig, od interface{}) ([]byte, error) {
 	return yaml.Marshal(diff)
 }
 
+func GetValuesDiffJson(orig, od interface{}) ([]byte, error) {
+	origMap, err := toJson(orig)
+	if err != nil {
+		return nil, err
+	}
+	modMap, err := toJson(od)
+	if err != nil {
+		return nil, err
+	}
+
+	diff, err := GetValuesDiff(origMap, modMap)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(diff)
+}
+
 func toJson(v interface{}) (map[string]interface{}, error) {
 	data, err := kj.Marshal(v)
 	if err != nil {
