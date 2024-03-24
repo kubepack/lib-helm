@@ -1,8 +1,6 @@
 module kubepack.dev/lib-helm
 
-go 1.21.5
-
-toolchain go1.21.6
+go 1.22.1
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
@@ -24,7 +22,7 @@ require (
 	github.com/prometheus/client_golang v1.18.0
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/net v0.19.0
-	gomodules.xyz/encoding v0.0.7
+	gomodules.xyz/encoding v0.0.8
 	gomodules.xyz/sets v0.2.1
 	helm.sh/helm/v3 v3.14.3
 	k8s.io/api v0.29.0
