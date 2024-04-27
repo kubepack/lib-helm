@@ -45,7 +45,7 @@ func getValuesDiff(original, modified map[string]any, prefix string, diff map[st
 				diff[k] = d2
 			}
 		case []any, string, int8, uint8, int16, uint16, int32, uint32, int64, uint64, int, uint, float32, float64, bool, json.Number, nil:
-			if !reflect.DeepEqual(original[k], val) {
+			if origVal, ok := original[k]; !ok || !reflect.DeepEqual(origVal, val) {
 				diff[k] = val
 			}
 		default:
@@ -184,7 +184,7 @@ func getChangedValues(original, modified map[string]any, prefix string, cmds []s
 				cmds = append(cmds, fmt.Sprintf("%s=%v", curKey, val))
 			}
 		case nil:
-			if !reflect.DeepEqual(original[k], val) {
+			if origVal, ok := original[k]; !ok || !reflect.DeepEqual(origVal, val) {
 				cmds = append(cmds, fmt.Sprintf("%s=null", curKey))
 			}
 		default:

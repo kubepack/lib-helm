@@ -1,6 +1,7 @@
 package values
 
 import (
+	"reflect"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -183,6 +184,23 @@ func TestGetChangedValues(t *testing.T) {
 				`nodeSelector.'kubernetes\.io/role'=master`,
 			},
 		},
+		{
+			name: "delete values",
+			args: args{
+				original: map[string]any{
+					"annotations": map[string]any{},
+				},
+				modified: map[string]any{
+					"annotations": map[string]any{
+						"helm.sh/hook": nil,
+					},
+				},
+			},
+			want: []string{
+				`annotations.'helm\.sh/hook'=null`,
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -193,6 +211,51 @@ func TestGetChangedValues(t *testing.T) {
 			}
 			if !sets.NewString(got...).Equal(sets.NewString(tt.want...)) {
 				t.Errorf("GetChangedValues() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetValuesMapDiff(t *testing.T) {
+	type args struct {
+		original map[string]any
+		modified map[string]any
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    map[string]any
+		wantErr bool
+	}{
+		{
+			name: "delete values",
+			args: args{
+				original: map[string]any{
+					"annotations": map[string]any{},
+				},
+				modified: map[string]any{
+					"annotations": map[string]any{
+						"helm.sh/hook": nil,
+					},
+				},
+			},
+			want: map[string]any{
+				"annotations": map[string]any{
+					"helm.sh/hook": nil,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetValuesMapDiff(tt.args.original, tt.args.modified)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetValuesMapDiff() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetValuesMapDiff() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
