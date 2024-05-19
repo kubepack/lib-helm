@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"os"
 
-	fluxsrc "github.com/fluxcd/source-controller/api/v1beta2"
+	fluxsrc "github.com/fluxcd/source-controller/api/v1"
 	"helm.sh/helm/v3/pkg/chart/loader"
 	helmgetter "helm.sh/helm/v3/pkg/getter"
 	helmreg "helm.sh/helm/v3/pkg/registry"

@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/fluxcd/pkg/oci/auth/login"
-	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
+	sourcev1beta2 "github.com/fluxcd/source-controller/api/v1beta2"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 )
@@ -40,7 +40,7 @@ func (a Anonymous) Resolve(_ authn.Resource) (authn.Authenticator, error) {
 
 // OIDCAuth generates the OIDC credential authenticator based on the specified cloud provider.
 func OIDCAuth(ctx context.Context, url, provider string) (authn.Authenticator, error) {
-	u := strings.TrimPrefix(url, sourcev1.OCIRepositoryPrefix)
+	u := strings.TrimPrefix(url, sourcev1beta2.OCIRepositoryPrefix)
 	ref, err := name.ParseReference(u)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL '%s': %w", u, err)
@@ -48,11 +48,11 @@ func OIDCAuth(ctx context.Context, url, provider string) (authn.Authenticator, e
 
 	opts := login.ProviderOptions{}
 	switch provider {
-	case sourcev1.AmazonOCIProvider:
+	case sourcev1beta2.AmazonOCIProvider:
 		opts.AwsAutoLogin = true
-	case sourcev1.AzureOCIProvider:
+	case sourcev1beta2.AzureOCIProvider:
 		opts.AzureAutoLogin = true
-	case sourcev1.GoogleOCIProvider:
+	case sourcev1beta2.GoogleOCIProvider:
 		opts.GcpAutoLogin = true
 	}
 

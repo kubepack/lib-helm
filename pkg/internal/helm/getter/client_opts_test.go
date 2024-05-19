@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/fluxcd/pkg/apis/meta"
-	helmv1 "github.com/fluxcd/source-controller/api/v1beta2"
+	helmv1 "github.com/fluxcd/source-controller/api/v1"
 	"github.com/google/go-containerregistry/pkg/name"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"

@@ -322,7 +322,6 @@ github.com/felixge/httpsnoop
 # github.com/fluxcd/helm-controller/api v1.0.1
 ## explicit; go 1.22.0
 github.com/fluxcd/helm-controller/api/v2
-github.com/fluxcd/helm-controller/api/v2beta2
 # github.com/fluxcd/pkg/apis/acl v0.3.0
 ## explicit; go 1.22.0
 github.com/fluxcd/pkg/apis/acl

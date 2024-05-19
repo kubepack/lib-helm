@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	fluxhelm "github.com/fluxcd/helm-controller/api/v2beta2"
-	fluxsrc "github.com/fluxcd/source-controller/api/v1beta2"
+	fluxhelm "github.com/fluxcd/helm-controller/api/v2"
+	fluxsrc "github.com/fluxcd/source-controller/api/v1"
 	"github.com/gobuffalo/flect"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
