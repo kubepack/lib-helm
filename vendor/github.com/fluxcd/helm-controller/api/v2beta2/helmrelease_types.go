@@ -27,6 +27,8 @@ import (
 
 	"github.com/fluxcd/pkg/apis/kustomize"
 	"github.com/fluxcd/pkg/apis/meta"
+
+	v2 "github.com/fluxcd/helm-controller/api/v2"
 )
 
 const (
@@ -74,11 +76,20 @@ type PostRenderer struct {
 }
 
 // HelmReleaseSpec defines the desired state of a Helm release.
+// +kubebuilder:validation:XValidation:rule="(has(self.chart) && !has(self.chartRef)) || (!has(self.chart) && has(self.chartRef))", message="either chart or chartRef must be set"
 type HelmReleaseSpec struct {
 	// Chart defines the template of the v1beta2.HelmChart that should be created
 	// for this HelmRelease.
-	// +required
-	Chart HelmChartTemplate `json:"chart"`
+	// +optional
+	Chart *HelmChartTemplate `json:"chart,omitempty"`
+
+	// ChartRef holds a reference to a source controller resource containing the
+	// Helm chart artifact.
+	//
+	// Note: this field is provisional to the v2 API, and not actively used
+	// by v2beta2 HelmReleases.
+	// +optional
+	ChartRef *CrossNamespaceSourceReference `json:"chartRef,omitempty"`
 
 	// Interval at which to reconcile the Helm release.
 	// +kubebuilder:validation:Type=string
@@ -370,6 +381,10 @@ type HelmChartTemplateSpec struct {
 	// +deprecated
 	ValuesFile string `json:"valuesFile,omitempty"`
 
+	// IgnoreMissingValuesFiles controls whether to silently ignore missing values files rather than failing.
+	// +optional
+	IgnoreMissingValuesFiles bool `json:"ignoreMissingValuesFiles,omitempty"`
+
 	// Verify contains the secret name containing the trusted public keys
 	// used to verify the signature and specifies which provider to use to check
 	// whether OCI image is authentic.
@@ -401,7 +416,7 @@ func (in HelmChartTemplate) GetNamespace(defaultNamespace string) string {
 // HelmChartTemplateVerification verifies the authenticity of an OCI Helm chart.
 type HelmChartTemplateVerification struct {
 	// Provider specifies the technology used to sign the OCI Helm chart.
-	// +kubebuilder:validation:Enum=cosign
+	// +kubebuilder:validation:Enum=cosign;notation
 	// +kubebuilder:default:=cosign
 	Provider string `json:"provider"`
 
@@ -941,6 +956,11 @@ type HelmReleaseStatus struct {
 	// +optional
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 
+	// ObservedPostRenderersDigest is the digest for the post-renderers of
+	// the last successful reconciliation attempt.
+	// +optional
+	ObservedPostRenderersDigest string `json:"observedPostRenderersDigest,omitempty"`
+
 	// LastAttemptedGeneration is the last generation the controller attempted
 	// to reconcile.
 	// +optional
@@ -966,7 +986,7 @@ type HelmReleaseStatus struct {
 	// History holds the history of Helm releases performed for this HelmRelease
 	// up to the last successfully completed release.
 	// +optional
-	History Snapshots `json:"history,omitempty"`
+	History v2.Snapshots `json:"history,omitempty"`
 
 	// LastAttemptedReleaseAction is the last release action performed for this
 	// HelmRelease. It is used to determine the active remediation strategy.
@@ -996,9 +1016,15 @@ type HelmReleaseStatus struct {
 	LastAppliedRevision string `json:"lastAppliedRevision,omitempty"`
 
 	// LastAttemptedRevision is the Source revision of the last reconciliation
-	// attempt.
+	// attempt. For OCIRepository  sources, the 12 first characters of the digest are
+	// appended to the chart version e.g. "1.2.3+1234567890ab".
 	// +optional
 	LastAttemptedRevision string `json:"lastAttemptedRevision,omitempty"`
+
+	// LastAttemptedRevisionDigest is the digest of the last reconciliation attempt.
+	// This is only set for OCIRepository sources.
+	// +optional
+	LastAttemptedRevisionDigest string `json:"lastAttemptedRevisionDigest,omitempty"`
 
 	// LastAttemptedValuesChecksum is the SHA1 checksum for the values of the last
 	// reconciliation attempt.
@@ -1052,6 +1078,10 @@ func (in HelmReleaseStatus) GetHelmChart() (string, string) {
 	return "", ""
 }
 
+func (in *HelmReleaseStatus) GetLastAttemptedRevision() string {
+	return in.LastAttemptedRevision
+}
+
 const (
 	// SourceIndexKey is the key used for indexing HelmReleases based on
 	// their sources.
@@ -1059,14 +1089,13 @@ const (
 )
 
 // +genclient
-// +genclient:Namespaced
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:shortName=hr
-// +kubebuilder:storageversion
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description=""
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type==\"Ready\")].status",description=""
 // +kubebuilder:printcolumn:name="Status",type="string",JSONPath=".status.conditions[?(@.type==\"Ready\")].message",description=""
+// +kubebuilder:deprecatedversion:warning="v2beta2 HelmRelease is deprecated, upgrade to v2"
 
 // HelmRelease is the Schema for the helmreleases API
 type HelmRelease struct {
@@ -1240,6 +1269,16 @@ func (in *HelmRelease) SetConditions(conditions []metav1.Condition) {
 // Deprecated: use GetConditions instead.
 func (in *HelmRelease) GetStatusConditions() *[]metav1.Condition {
 	return &in.Status.Conditions
+}
+
+// IsChartRefPresent returns true if the HelmRelease has a ChartRef.
+func (in *HelmRelease) HasChartRef() bool {
+	return in.Spec.ChartRef != nil
+}
+
+// IsChartTemplatePresent returns true if the HelmRelease has a ChartTemplate.
+func (in *HelmRelease) HasChartTemplate() bool {
+	return in.Spec.Chart != nil
 }
 
 // +kubebuilder:object:root=true
