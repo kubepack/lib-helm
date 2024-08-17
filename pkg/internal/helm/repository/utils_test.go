@@ -18,53 +18,62 @@ package repository
 
 import (
 	"testing"
-
-	. "github.com/onsi/gomega"
 )
 
 func TestNormalizeURL(t *testing.T) {
 	tests := []struct {
-		name string
-		url  string
-		want string
+		name    string
+		url     string
+		want    string
+		wantErr bool
 	}{
 		{
-			name: "with slash",
-			url:  "http://example.com/",
-			want: "http://example.com/",
+			name:    "with slash",
+			url:     "http://example.com/",
+			want:    "http://example.com/",
+			wantErr: false,
 		},
 		{
-			name: "without slash",
-			url:  "http://example.com",
-			want: "http://example.com/",
+			name:    "without slash",
+			url:     "http://example.com",
+			want:    "http://example.com/",
+			wantErr: false,
 		},
 		{
-			name: "double slash",
-			url:  "http://example.com//",
-			want: "http://example.com/",
+			name:    "double slash",
+			url:     "http://example.com//",
+			want:    "http://example.com/",
+			wantErr: false,
 		},
 		{
-			name: "empty",
-			url:  "",
-			want: "",
+			name:    "empty",
+			url:     "",
+			want:    "",
+			wantErr: false,
 		},
 		{
-			name: "oci with slash",
-			url:  "oci://example.com/",
-			want: "oci://example.com",
+			name:    "oci with slash",
+			url:     "oci://example.com/",
+			want:    "oci://example.com",
+			wantErr: false,
 		},
 		{
-			name: "oci double slash",
-			url:  "oci://example.com//",
-			want: "oci://example.com",
+			name:    "oci double slash",
+			url:     "oci://example.com//",
+			want:    "oci://example.com",
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := NewWithT(t)
-
-			got := NormalizeURL(tt.url)
-			g.Expect(got).To(Equal(tt.want))
+			got, err := NormalizeURL(tt.url)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NormalizeURL() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("NormalizeURL() got = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
