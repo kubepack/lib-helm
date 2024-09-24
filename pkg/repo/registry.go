@@ -37,7 +37,10 @@ import (
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/helmpath"
 	core "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/types"
+	apiregistrationapi "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1"
 	kmapi "kmodules.xyz/client-go/api/v1"
+	meta_util "kmodules.xyz/client-go/meta"
 	"kubepack.dev/lib-helm/pkg/chart/loader"
 	"kubepack.dev/lib-helm/pkg/downloader"
 	"kubepack.dev/lib-helm/pkg/getter"
@@ -343,6 +346,23 @@ func (r *Registry) getLegacyChart(repository, chartName, chartVersion string) (*
 		cx.Digest = cv.Digest
 	}
 	return cx, nil
+}
+
+func (r *Registry) GetSourceRefNamespace(sourceName string) (string, error) {
+	if !meta_util.PossiblyInCluster() {
+		return "kubeops", nil
+	}
+
+	var apisvc apiregistrationapi.APIService
+	name := "v1alpha1.meta.k8s.appscode.com"
+	err := r.kc.Get(context.TODO(), types.NamespacedName{Name: name}, &apisvc)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to detect namespace for HelmRepository %s", sourceName)
+	}
+	if apisvc.Spec.Service == nil {
+		return "", errors.Wrapf(err, "failed to detect namespace for HelmRepository %s from Local APIService %s", sourceName, name)
+	}
+	return apisvc.Spec.Service.Namespace, nil
 }
 
 func (r *Registry) GetHelmRepository(obj releasesapi.ChartSourceRef) (*fluxsrc.HelmRepository, error) {

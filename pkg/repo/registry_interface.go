@@ -11,6 +11,7 @@ import (
 
 type IRegistry interface {
 	GetChart(srcRef releasesapi.ChartSourceRef) (*ChartExtended, error)
+	GetSourceRefNamespace(sourceName string) (string, error)
 	GetHelmRepository(srcRef releasesapi.ChartSourceRef) (*fluxsrc.HelmRepository, error)
 }
 
@@ -44,6 +45,10 @@ func (r EmbeddedRegistry) GetChart(srcRef releasesapi.ChartSourceRef) (*ChartExt
 	return &ChartExtended{
 		Chart: chrt,
 	}, nil
+}
+
+func (r EmbeddedRegistry) GetSourceRefNamespace(sourceName string) (string, error) {
+	return "", fmt.Errorf("no helmrepository exists for EmbeddedRegistry")
 }
 
 func (r EmbeddedRegistry) GetHelmRepository(obj releasesapi.ChartSourceRef) (*fluxsrc.HelmRepository, error) {
