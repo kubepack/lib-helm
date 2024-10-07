@@ -15,7 +15,7 @@ spec:
     references:
     - '{.spec.databaseRef.name}'
     target:
-      apiVersion: kubedb.com/v1alpha2
+      apiVersion: kubedb.com/v1
       kind: MySQL
     type: MatchRef
   resource:
@@ -303,9 +303,6 @@ spec:
                 mysql:
                   properties:
                     nodeSelectionPolicy:
-                      enum:
-                      - LabelSelector
-                      - Taint
                       type: string
                     resources:
                       properties:

@@ -66,6 +66,9 @@ type FeatureSpec struct {
 	// Required specifies whether this feature is mandatory or not for enabling the respecting FeatureSet.
 	// +optional
 	Recommended bool `json:"recommended,omitempty"`
+	// Disabled specify whether this feature set is disabled.
+	// +optional
+	Disabled bool `json:"disabled,omitempty"`
 	// Requirements specifies the requirements to enable this feature.
 	// +optional
 	Requirements Requirements `json:"requirements,omitempty"`
@@ -102,6 +105,7 @@ type WorkloadInfo struct {
 	metav1.GroupVersionKind `json:",inline"`
 	// Selector specifies label selector that should be used to select this workload
 	Selector map[string]string `json:"selector"`
+	Optional string            `json:"optional,omitempty"`
 }
 
 type ChartInfo struct {

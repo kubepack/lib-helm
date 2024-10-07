@@ -21,8 +21,8 @@ spec:
         app.kubernetes.io/managed-by: kubedb.com
         app.kubernetes.io/name: proxysqls.kubedb.com
     target:
-      apiVersion: apps/v1
-      kind: StatefulSet
+      apiVersion: apps.k8s.appscode.com/v1
+      kind: PetSet
     type: MatchSelector
   - labels:
     - connect_via
@@ -164,6 +164,8 @@ spec:
                   type: string
               type: object
               x-kubernetes-map-type: atomic
+            halted:
+              type: boolean
             healthChecker:
               default:
                 failureThreshold: 1
@@ -3078,6 +3080,7 @@ spec:
                     - primary
                     - standby
                     - stats
+                    - dashboard
                     type: string
                   metadata:
                     properties:

@@ -21,8 +21,8 @@ spec:
         app.kubernetes.io/managed-by: kubedb.com
         app.kubernetes.io/name: perconaxtradbs.kubedb.com
     target:
-      apiVersion: apps/v1
-      kind: StatefulSet
+      apiVersion: apps.k8s.appscode.com/v1
+      kind: PetSet
     type: MatchSelector
   - labels:
     - connect_via
@@ -4190,6 +4190,7 @@ spec:
                     - primary
                     - standby
                     - stats
+                    - dashboard
                     type: string
                   metadata:
                     properties:

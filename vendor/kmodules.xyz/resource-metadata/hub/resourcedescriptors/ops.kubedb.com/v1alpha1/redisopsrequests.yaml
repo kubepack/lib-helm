@@ -15,7 +15,7 @@ spec:
     references:
     - '{.spec.databaseRef.name}'
     target:
-      apiVersion: kubedb.com/v1alpha2
+      apiVersion: kubedb.com/v1
       kind: Redis
     type: MatchRef
   resource:
@@ -97,10 +97,10 @@ spec:
               x-kubernetes-map-type: atomic
             horizontalScaling:
               properties:
-                master:
+                replicas:
                   format: int32
                   type: integer
-                replicas:
+                shards:
                   format: int32
                   type: integer
               type: object
@@ -332,9 +332,6 @@ spec:
                 redis:
                   properties:
                     nodeSelectionPolicy:
-                      enum:
-                      - LabelSelector
-                      - Taint
                       type: string
                     resources:
                       properties:
