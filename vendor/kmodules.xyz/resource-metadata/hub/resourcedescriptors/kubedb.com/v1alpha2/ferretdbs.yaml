@@ -21,8 +21,8 @@ spec:
         app.kubernetes.io/managed-by: kubedb.com
         app.kubernetes.io/name: ferretdbs.kubedb.com
     target:
-      apiVersion: apps/v1
-      kind: StatefulSet
+      apiVersion: apps.k8s.appscode.com/v1
+      kind: PetSet
     type: MatchSelector
   - labels:
     - connect_via
@@ -168,23 +168,17 @@ spec:
                   type: boolean
                 linkedDB:
                   type: string
-                postgres:
+                postgresRef:
                   properties:
-                    service:
-                      properties:
-                        name:
-                          type: string
-                        namespace:
-                          type: string
-                        pgPort:
-                          format: int32
-                          type: integer
-                      type: object
-                    url:
+                    name:
                       type: string
-                    version:
+                    namespace:
                       type: string
+                  required:
+                  - name
                   type: object
+                version:
+                  type: string
               required:
               - externallyManaged
               type: object
@@ -3494,6 +3488,7 @@ spec:
                     - primary
                     - standby
                     - stats
+                    - dashboard
                     type: string
                   metadata:
                     properties:

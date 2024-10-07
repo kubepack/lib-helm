@@ -49,6 +49,13 @@ spec:
           type: object
         spec:
           properties:
+            clickHouseKeeper:
+              properties:
+                image:
+                  type: string
+              required:
+              - image
+              type: object
             db:
               properties:
                 image:
@@ -69,9 +76,25 @@ spec:
                   format: int64
                   type: integer
               type: object
+            ui:
+              items:
+                properties:
+                  disable:
+                    type: boolean
+                  name:
+                    type: string
+                  values:
+                    x-kubernetes-preserve-unknown-fields: true
+                  version:
+                    type: string
+                required:
+                - name
+                type: object
+              type: array
             version:
               type: string
           required:
+          - clickHouseKeeper
           - db
           - initContainer
           - version

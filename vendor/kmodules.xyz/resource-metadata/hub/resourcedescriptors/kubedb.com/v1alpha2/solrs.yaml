@@ -21,8 +21,8 @@ spec:
         app.kubernetes.io/managed-by: kubedb.com
         app.kubernetes.io/name: solrs.kubedb.com
     target:
-      apiVersion: apps/v1
-      kind: StatefulSet
+      apiVersion: apps.k8s.appscode.com/v1
+      kind: PetSet
     type: MatchSelector
   - labels:
     - connect_via
@@ -167,6 +167,8 @@ spec:
                   type: string
               type: object
               x-kubernetes-map-type: atomic
+            clientAuthSSL:
+              type: string
             configSecret:
               properties:
                 name:
@@ -206,6 +208,13 @@ spec:
                   format: int32
                   type: integer
               type: object
+            keystoreSecret:
+              properties:
+                name:
+                  default: ""
+                  type: string
+              type: object
+              x-kubernetes-map-type: atomic
             monitor:
               properties:
                 agent:
@@ -3482,6 +3491,7 @@ spec:
                     - primary
                     - standby
                     - stats
+                    - dashboard
                     type: string
                   metadata:
                     properties:

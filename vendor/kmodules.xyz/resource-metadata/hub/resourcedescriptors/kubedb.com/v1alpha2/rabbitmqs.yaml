@@ -21,8 +21,8 @@ spec:
         app.kubernetes.io/managed-by: kubedb.com
         app.kubernetes.io/name: rabbitmqs.kubedb.com
     target:
-      apiVersion: apps/v1
-      kind: StatefulSet
+      apiVersion: apps.k8s.appscode.com/v1
+      kind: PetSet
     type: MatchSelector
   - labels:
     - connect_via
@@ -178,6 +178,17 @@ spec:
               type: string
             disableSecurity:
               type: boolean
+            disabledProtocols:
+              items:
+                enum:
+                - http
+                - amqp
+                - mqtt
+                - stomp
+                - web_mqtt
+                - web_stomp
+                type: string
+              type: array
             enableSSL:
               type: boolean
             halted:
@@ -185,7 +196,7 @@ spec:
             healthChecker:
               default:
                 failureThreshold: 3
-                periodSeconds: 20
+                periodSeconds: 10
                 timeoutSeconds: 10
               properties:
                 disableWriteCheck:
@@ -3479,6 +3490,7 @@ spec:
                     - primary
                     - standby
                     - stats
+                    - dashboard
                     type: string
                   metadata:
                     properties:
