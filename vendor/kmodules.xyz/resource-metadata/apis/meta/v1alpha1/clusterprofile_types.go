@@ -17,24 +17,10 @@ limitations under the License.
 package v1alpha1
 
 import (
+	uiapi "kmodules.xyz/resource-metadata/apis/ui/v1alpha1"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-const (
-	ResourceKindClusterProfile = "ClusterProfile"
-	ResourceClusterProfile     = "clusterprofile"
-	ResourceClusterProfiles    = "clusterprofiles"
-)
-
-// ClusterProfileSpec defines the desired state of ClusterProfile
-type ClusterProfileSpec struct {
-	Title               string                 `json:"title"`
-	Description         string                 `json:"description"`
-	Provider            string                 `json:"provider,omitempty"`
-	RequiredFeatureSets map[string]FeatureList `json:"requiredFeatureSets,omitempty"`
-}
-
-// ClusterProfile is the Schema for the clusterprofiles API
 
 // +genclient
 // +genclient:nonNamespaced
@@ -47,18 +33,17 @@ type ClusterProfileSpec struct {
 // +kubebuilder:printcolumn:name="Status",type="string",JSONPath=".status.phase"
 // +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 type ClusterProfile struct {
-	metav1.TypeMeta   `json:",inline"`
+	metav1.TypeMeta `json:",inline"`
+	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec ClusterProfileSpec `json:"spec,omitempty"`
+	Spec              uiapi.ClusterProfileSpec `json:"spec,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 
-// ClusterProfileList contains a list of ClusterProfile
 type ClusterProfileList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []ClusterProfile `json:"items"`
+	Items           []ClusterProfile `json:"items,omitempty"`
 }

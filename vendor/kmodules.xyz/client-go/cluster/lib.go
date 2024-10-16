@@ -157,7 +157,7 @@ func UpsertClusterMetadata(kc client.Client, md *kmapi.ClusterMetadata) error {
 	return err
 }
 
-func DetectCAPICluster(kc client.Client) (*kmapi.CAPIClusterInfo, error) {
+func DetectCAPICluster(kc client.Reader) (*kmapi.CAPIClusterInfo, error) {
 	var list unstructured.UnstructuredList
 	list.SetGroupVersionKind(schema.GroupVersionKind{
 		Group:   "cluster.x-k8s.io",
@@ -220,6 +220,8 @@ func getProviderName(kind string) kmapi.CAPIProvider {
 		return kmapi.CAPIProviderCAPZ
 	case "GCPManagedCluster":
 		return kmapi.CAPIProviderCAPG
+	case "HetznerCluster":
+		return kmapi.CAPIProviderCAPH
 	}
 	return ""
 }
@@ -237,7 +239,7 @@ func DetectClusterManager(kc client.Client, mappers ...meta.RESTMapper) kmapi.Cl
 	if IsOpenClusterHub(mapper) {
 		result |= kmapi.ClusterManagerOCMHub
 	}
-	if IsOpenClusterSpoke(mapper) {
+	if IsOpenClusterSpoke(kc) {
 		result |= kmapi.ClusterManagerOCMSpoke
 	}
 	if IsOpenClusterMulticlusterControlplane(mapper) {
