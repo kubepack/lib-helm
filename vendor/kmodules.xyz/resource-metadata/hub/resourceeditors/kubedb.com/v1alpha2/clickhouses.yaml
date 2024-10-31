@@ -24,12 +24,12 @@ spec:
     actions:
     - items:
       - editor:
-          name: opskubedbcom-mysqlopsrequest-editor
+          name: opskubedbcom-clickhouseopsrequest-editor
           sourceRef:
             apiGroup: source.toolkit.fluxcd.io
             kind: HelmRepository
             name: appscode-charts-oci
-          version: v0.8.0
+          version: v0.9.0
         enforceQuota: false
         flow: standalone-create
         icons:
@@ -38,12 +38,12 @@ spec:
         name: Restart
         operationId: create-opsrequest-restart
       - editor:
-          name: opskubedbcom-mysqlopsrequest-editor
+          name: opskubedbcom-clickhouseopsrequest-editor
           sourceRef:
             apiGroup: source.toolkit.fluxcd.io
             kind: HelmRepository
             name: appscode-charts-oci
-          version: v0.8.0
+          version: v0.9.0
         enforceQuota: false
         flow: standalone-create
         icons:
@@ -56,12 +56,12 @@ spec:
       - disabledTemplate: |
           {{ not (gt .spec.replicas 1) }}
         editor:
-          name: opskubedbcom-mysqlopsrequest-editor
+          name: opskubedbcom-clickhouseopsrequest-editor
           sourceRef:
             apiGroup: source.toolkit.fluxcd.io
             kind: HelmRepository
             name: appscode-charts-oci
-          version: v0.8.0
+          version: v0.9.0
         enforceQuota: true
         flow: standalone-create
         icons:
@@ -70,12 +70,12 @@ spec:
         name: Horizontal Scale
         operationId: create-opsrequest-horizontalscaling
       - editor:
-          name: opskubedbcom-mysqlopsrequest-editor
+          name: opskubedbcom-clickhouseopsrequest-editor
           sourceRef:
             apiGroup: source.toolkit.fluxcd.io
             kind: HelmRepository
             name: appscode-charts-oci
-          version: v0.8.0
+          version: v0.9.0
         enforceQuota: true
         flow: standalone-create
         icons:
@@ -84,12 +84,12 @@ spec:
         name: Vertical Scale
         operationId: create-opsrequest-verticalscaling
       - editor:
-          name: opskubedbcom-mysqlopsrequest-editor
+          name: opskubedbcom-clickhouseopsrequest-editor
           sourceRef:
             apiGroup: source.toolkit.fluxcd.io
             kind: HelmRepository
             name: appscode-charts-oci
-          version: v0.8.0
+          version: v0.9.0
         enforceQuota: true
         flow: standalone-create
         icons:
@@ -104,7 +104,7 @@ spec:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: appscode-charts-oci
-      version: v0.8.0
+      version: v0.9.0
     enforceQuota: true
     options:
       name: kubedbcom-clickhouse-editor-options
@@ -112,7 +112,7 @@ spec:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: appscode-charts-oci
-      version: v0.8.0
+      version: v0.9.0
   variants:
   - name: default
     selector:
