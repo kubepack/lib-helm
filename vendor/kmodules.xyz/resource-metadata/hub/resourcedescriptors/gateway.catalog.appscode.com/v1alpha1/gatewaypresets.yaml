@@ -3,30 +3,36 @@ kind: ResourceDescriptor
 metadata:
   creationTimestamp: null
   labels:
-    k8s.io/group: meta.k8s.appscode.com
-    k8s.io/kind: ClusterStatus
-    k8s.io/resource: clusterstatuses
+    k8s.io/group: gateway.catalog.appscode.com
+    k8s.io/kind: GatewayPreset
+    k8s.io/resource: gatewaypresets
     k8s.io/version: v1alpha1
-  name: meta.k8s.appscode.com-v1alpha1-clusterstatuses
+  name: gateway.catalog.appscode.com-v1alpha1-gatewaypresets
 spec:
   resource:
-    group: meta.k8s.appscode.com
-    kind: ClusterStatus
-    name: clusterstatuses
+    group: gateway.catalog.appscode.com
+    kind: GatewayPreset
+    name: gatewaypresets
     scope: Namespaced
     version: v1alpha1
   validation:
     openAPIV3Schema:
+      description: GatewayPreset is the Schema for the gatewaypresets API.
       properties:
         apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          description: |-
+            APIVersion defines the versioned schema of this representation of an object.
+            Servers should convert recognized schemas to the latest internal value, and
+            may reject unrecognized values.
+            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
           type: string
         kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          description: |-
+            Kind is a string value representing the REST resource this object represents.
+            Servers may infer this from the endpoint the client submits requests to.
+            Cannot be updated.
+            In CamelCase.
+            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
           type: string
         metadata:
           properties:
@@ -61,32 +67,43 @@ spec:
                 when modifying objects. More info: http://kubernetes.io/docs/user-guide/annotations'
               type: object
           type: object
-        response:
+        spec:
+          description: GatewayPresetSpec defines the desired state of GatewayPreset.
           properties:
-            clusterAPI:
-              description: ClusterAPI contains capi cluster information if the cluster
-                is created by cluster-api
+            parametersRef:
+              description: |-
+                ParametersReference identifies an API object containing controller-specific
+                configuration resource within the cluster.
               properties:
-                clusterName:
+                group:
+                  description: Group is the group of the referent.
+                  maxLength: 253
+                  pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                  type: string
+                kind:
+                  description: Kind is kind of the referent.
+                  maxLength: 63
+                  minLength: 1
+                  pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                  type: string
+                name:
+                  description: Name is the name of the referent.
+                  maxLength: 253
+                  minLength: 1
                   type: string
                 namespace:
+                  description: |-
+                    Namespace is the namespace of the referent.
+                    This field is required when referring to a Namespace-scoped resource and
+                    MUST be unset when referring to a Cluster-scoped resource.
+                  maxLength: 63
+                  minLength: 1
+                  pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
                   type: string
-                provider:
-                  type: string
+              required:
+              - group
+              - kind
+              - name
               type: object
-            clusterManagers:
-              items:
-                type: string
-              type: array
-            message:
-              description: Message specifies additional information regarding the
-                possible actions for the user
-              type: string
-            phase:
-              description: Phase represents current status of the cluster
-              type: string
-            reason:
-              description: Reason explains the reason behind the cluster current phase
-              type: string
           type: object
       type: object

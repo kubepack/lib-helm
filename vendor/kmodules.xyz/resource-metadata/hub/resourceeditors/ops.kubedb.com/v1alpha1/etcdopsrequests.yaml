@@ -3,24 +3,24 @@ kind: ResourceEditor
 metadata:
   creationTimestamp: null
   labels:
-    k8s.io/group: meta.k8s.appscode.com
-    k8s.io/kind: ClusterStatus
-    k8s.io/resource: clusterstatuses
+    k8s.io/group: ops.kubedb.com
+    k8s.io/kind: EtcdOpsRequest
+    k8s.io/resource: etcdopsrequests
     k8s.io/version: v1alpha1
-  name: meta.k8s.appscode.com-v1alpha1-clusterstatuses
+  name: ops.kubedb.com-v1alpha1-etcdopsrequests
 spec:
   resource:
-    group: meta.k8s.appscode.com
-    kind: ClusterStatus
-    name: clusterstatuses
+    group: ops.kubedb.com
+    kind: EtcdOpsRequest
+    name: etcdopsrequests
     scope: Namespaced
     version: v1alpha1
   ui:
     editor:
-      name: metak8sappscodecom-clusterstatus-editor
+      name: opskubedbcom-etcdopsrequest-editor
       sourceRef:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: appscode-charts-oci
-      version: v0.9.0
+      version: v0.12.0
     enforceQuota: false
