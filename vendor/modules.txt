@@ -1340,7 +1340,7 @@ kmodules.xyz/go-containerregistry/name
 ## explicit; go 1.22.0
 kmodules.xyz/offshoot-api/api/v1
 kmodules.xyz/offshoot-api/api/v2
-# kmodules.xyz/resource-metadata v0.24.0
+# kmodules.xyz/resource-metadata v0.25.1
 ## explicit; go 1.22.1
 kmodules.xyz/resource-metadata/apis/meta
 kmodules.xyz/resource-metadata/apis/meta/v1alpha1

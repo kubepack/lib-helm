@@ -73,6 +73,10 @@ spec:
                   type: string
                 fieldPath:
                   type: string
+                filters:
+                  additionalProperties:
+                    type: boolean
+                  type: object
                 icons:
                   items:
                     description: ImageSpec contains information about an image used
@@ -322,6 +326,10 @@ spec:
                                 type: string
                               fieldPath:
                                 type: string
+                              filters:
+                                additionalProperties:
+                                  type: boolean
+                                type: object
                               icons:
                                 items:
                                   description: ImageSpec contains information about
@@ -589,6 +597,10 @@ spec:
                               type: string
                             fieldPath:
                               type: string
+                            filters:
+                              additionalProperties:
+                                type: boolean
+                              type: object
                             icons:
                               items:
                                 description: ImageSpec contains information about
@@ -833,6 +845,10 @@ spec:
                               type: string
                             fieldPath:
                               type: string
+                            filters:
+                              additionalProperties:
+                                type: boolean
+                              type: object
                             icons:
                               items:
                                 description: ImageSpec contains information about
@@ -1114,6 +1130,10 @@ spec:
                   type: string
                 fieldPath:
                   type: string
+                filters:
+                  additionalProperties:
+                    type: boolean
+                  type: object
                 icons:
                   items:
                     description: ImageSpec contains information about an image used
@@ -1353,8 +1373,8 @@ spec:
                                 name:
                                   type: string
                                 sourceRef:
-                                  description: TypedObjectReference represents an
-                                    typed namespaced object.
+                                  description: TypedObjectReference represents a typed
+                                    namespaced object.
                                   properties:
                                     apiGroup:
                                       type: string
@@ -1428,7 +1448,7 @@ spec:
                     name:
                       type: string
                     sourceRef:
-                      description: TypedObjectReference represents an typed namespaced
+                      description: TypedObjectReference represents a typed namespaced
                         object.
                       properties:
                         apiGroup:
@@ -1466,7 +1486,7 @@ spec:
                     name:
                       type: string
                     sourceRef:
-                      description: TypedObjectReference represents an typed namespaced
+                      description: TypedObjectReference represents a typed namespaced
                         object.
                       properties:
                         apiGroup:

@@ -54,16 +54,19 @@ type ResourceOutlineFilterSpec struct {
 type ResourcePageOutlineFilter struct {
 	Name     string                 `json:"name"`
 	Sections []SectionOutlineFilter `json:"sections,omitempty"`
+	Show     bool                   `json:"show"`
 }
 
 type ActionTemplateGroupFilter struct {
-	Name  string          `json:"name,omitempty"`
-	Items map[string]bool `json:"items"`
+	Name  string          `json:"name"`
+	Items map[string]bool `json:"items,omitempty"`
+	Show  bool            `json:"show"`
 }
 
 type SectionOutlineFilter struct {
 	Name    string          `json:"name,omitempty"`
-	Info    bool            `json:"info"`
+	Show    bool            `json:"show"`
+	Info    map[string]bool `json:"info"`
 	Insight bool            `json:"insight"`
 	Blocks  map[string]bool `json:"blocks,omitempty"`
 }
