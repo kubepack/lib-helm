@@ -24,7 +24,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/spf13/pflag v1.0.6
-	golang.org/x/net v0.37.0
+	golang.org/x/net v0.38.0
 	gomodules.xyz/encoding v0.0.8
 	gomodules.xyz/sets v0.2.1
 	helm.sh/helm/v3 v3.17.2
