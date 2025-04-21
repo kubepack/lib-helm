@@ -24,10 +24,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/spf13/pflag v1.0.6
-	golang.org/x/net v0.37.0
+	golang.org/x/net v0.38.0
 	gomodules.xyz/encoding v0.0.8
 	gomodules.xyz/sets v0.2.1
-	helm.sh/helm/v3 v3.17.2
+	helm.sh/helm/v3 v3.17.3
 	k8s.io/api v0.32.3
 	k8s.io/apiextensions-apiserver v0.32.3
 	k8s.io/apimachinery v0.32.3
@@ -77,7 +77,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
-	github.com/containerd/containerd v1.7.24 // indirect
+	github.com/containerd/containerd v1.7.27 // indirect
 	github.com/containerd/errdefs v0.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
@@ -111,7 +111,7 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.6.9 // indirect
@@ -211,7 +211,7 @@ require (
 	kmodules.xyz/apiversion v0.2.0 // indirect
 	kmodules.xyz/go-containerregistry v0.0.14 // indirect
 	kmodules.xyz/offshoot-api v0.32.0 // indirect
-	kmodules.xyz/resource-metrics v0.30.6-0.20250302111458-dee2855523db // indirect
+	kmodules.xyz/resource-metrics v0.30.6 // indirect
 	oras.land/oras-go v1.2.5 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/kustomize/api v0.18.0 // indirect

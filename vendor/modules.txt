@@ -211,7 +211,7 @@ github.com/chai2010/gettext-go
 github.com/chai2010/gettext-go/mo
 github.com/chai2010/gettext-go/plural
 github.com/chai2010/gettext-go/po
-# github.com/containerd/containerd v1.7.24
+# github.com/containerd/containerd v1.7.27
 ## explicit; go 1.21
 github.com/containerd/containerd/archive/compression
 github.com/containerd/containerd/content
@@ -396,7 +396,7 @@ github.com/gobwas/glob/util/strings
 ## explicit; go 1.15
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/sortkeys
-# github.com/golang-jwt/jwt/v5 v5.2.1
+# github.com/golang-jwt/jwt/v5 v5.2.2
 ## explicit; go 1.18
 github.com/golang-jwt/jwt/v5
 # github.com/golang/protobuf v1.5.4
@@ -758,7 +758,7 @@ golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/pkcs12
 golang.org/x/crypto/pkcs12/internal/rc2
 golang.org/x/crypto/scrypt
-# golang.org/x/net v0.37.0
+# golang.org/x/net v0.38.0
 ## explicit; go 1.23.0
 golang.org/x/net/html
 golang.org/x/net/html/atom
@@ -897,7 +897,7 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# helm.sh/helm/v3 v3.17.2 => github.com/x-helm/helm/v3 v3.17.3-0.20250315010135-36de8bbf52f8
+# helm.sh/helm/v3 v3.17.3 => github.com/x-helm/helm/v3 v3.17.3-0.20250315010135-36de8bbf52f8
 ## explicit; go 1.23.0
 helm.sh/helm/v3/internal/fileutil
 helm.sh/helm/v3/internal/resolver
@@ -1489,7 +1489,7 @@ kmodules.xyz/resource-metadata/crds
 kmodules.xyz/resource-metadata/hub
 kmodules.xyz/resource-metadata/hub/resourcedescriptors
 kmodules.xyz/resource-metadata/hub/resourceeditors
-# kmodules.xyz/resource-metrics v0.30.6-0.20250302111458-dee2855523db
+# kmodules.xyz/resource-metrics v0.30.6
 ## explicit; go 1.23.0
 kmodules.xyz/resource-metrics/api
 # oras.land/oras-go v1.2.5
