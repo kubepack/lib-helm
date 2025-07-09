@@ -37,6 +37,7 @@ type UpgradeOptions struct {
 	Atomic                         bool          `json:"atomic"`
 	CleanupOnFail                  bool          `json:"cleanupOnFail"`
 	PartOf                         string        `json:"partOf"`
+	TakeOwnership                  bool          `json:"takeOwnership"`
 }
 
 type Upgrader struct {
@@ -113,6 +114,7 @@ func (x *Upgrader) Run() (*release.Release, error) {
 	cmd.MaxHistory = x.opts.MaxHistory
 	cmd.Atomic = x.opts.Atomic
 	cmd.CleanupOnFail = x.opts.CleanupOnFail
+	cmd.TakeOwnership = x.opts.TakeOwnership
 
 	validInstallableChart, err := libchart.IsChartInstallable(chrt.Chart)
 	if !validInstallableChart {
