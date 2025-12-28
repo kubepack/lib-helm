@@ -1,0 +1,30 @@
+apiVersion: ui.k8s.appscode.com/v1alpha1
+kind: ResourceEditor
+metadata:
+  labels:
+    k8s.io/group: catalog.kubedb.com
+    k8s.io/kind: HazelcastVersion
+    k8s.io/resource: hazelcastversions
+    k8s.io/version: v1alpha1
+  name: catalog.kubedb.com-v1alpha1-hazelcastversions
+spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/catalog.kubedb.com/hazelcastversions.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/catalog.kubedb.com/hazelcastversions.png
+    type: image/png
+  resource:
+    group: catalog.kubedb.com
+    kind: HazelcastVersion
+    name: hazelcastversions
+    scope: Cluster
+    version: v1alpha1
+  ui:
+    editor:
+      name: catalogkubedbcom-hazelcastversion-editor
+      sourceRef:
+        apiGroup: source.toolkit.fluxcd.io
+        kind: HelmRepository
+        name: appscode-charts-oci
+      version: v0.28.0
+    enforceQuota: false

@@ -92,9 +92,9 @@ func TestDownload(t *testing.T) {
 		if r.UserAgent() != defaultUserAgent {
 			t.Errorf("Expected '%s', got '%s'", defaultUserAgent, r.UserAgent())
 		}
-		fmt.Fprint(w, expect)
+		_, _ = fmt.Fprint(w, expect)
 	}))
-	defer srv.Close()
+	defer srv.Close() // nolint:errcheck
 
 	g, err := All().ByScheme("http")
 	if err != nil {
@@ -122,10 +122,10 @@ func TestDownload(t *testing.T) {
 		if r.UserAgent() != expectedUserAgent {
 			t.Errorf("Expected '%s', got '%s'", expectedUserAgent, r.UserAgent())
 		}
-		fmt.Fprint(w, expect)
+		_, _ = fmt.Fprint(w, expect)
 	}))
 
-	defer basicAuthSrv.Close()
+	defer basicAuthSrv.Close() // nolint:errcheck
 
 	u, _ := url.ParseRequestURI(basicAuthSrv.URL)
 	httpgetter, err := NewHTTPGetter(
@@ -163,7 +163,7 @@ func TestDownloadTLS(t *testing.T) {
 	tlsConf.ServerName = "helm.sh"
 	tlsSrv.TLS = tlsConf
 	tlsSrv.StartTLS()
-	defer tlsSrv.Close()
+	defer tlsSrv.Close() // nolint:errcheck
 
 	u, _ := url.ParseRequestURI(tlsSrv.URL)
 	g, err := NewHTTPGetter(

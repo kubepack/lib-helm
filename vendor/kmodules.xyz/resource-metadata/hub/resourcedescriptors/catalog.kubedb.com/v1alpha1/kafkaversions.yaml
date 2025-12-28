@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: catalog.kubedb.com
     k8s.io/kind: KafkaVersion
@@ -72,6 +71,15 @@ spec:
               type: object
             deprecated:
               type: boolean
+            endOfLife:
+              type: boolean
+            initContainer:
+              properties:
+                image:
+                  type: string
+              required:
+              - image
+              type: object
             podSecurityPolicies:
               properties:
                 databasePolicyName:

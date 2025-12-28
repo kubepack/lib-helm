@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: gateway.voyagermesh.com
     k8s.io/kind: MySQLRoute
@@ -73,6 +72,11 @@ spec:
         spec:
           description: Spec defines the desired state of MySQLRoute.
           properties:
+            enableDecoding:
+              description: |-
+                Controls whether SQL statements received in Frontend Query messages
+                are decoded. Defaults to false.
+              type: boolean
             hostnames:
               description: |-
                 Hostnames defines a set of SNI names that should match against the

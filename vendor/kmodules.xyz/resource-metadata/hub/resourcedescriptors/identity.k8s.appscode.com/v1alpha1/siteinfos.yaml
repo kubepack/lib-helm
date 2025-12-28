@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: identity.k8s.appscode.com
     k8s.io/kind: SiteInfo
@@ -19,14 +18,19 @@ spec:
     openAPIV3Schema:
       properties:
         apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          description: |-
+            APIVersion defines the versioned schema of this representation of an object.
+            Servers should convert recognized schemas to the latest internal value, and
+            may reject unrecognized values.
+            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
           type: string
         kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          description: |-
+            Kind is a string value representing the REST resource this object represents.
+            Servers may infer this from the endpoint the client submits requests to.
+            Cannot be updated.
+            In CamelCase.
+            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
           type: string
         kubernetes:
           properties:
@@ -36,11 +40,21 @@ spec:
                   type: string
                 caBundle:
                   type: string
+                cloudServiceAuthMode:
+                  type: string
                 displayName:
                   type: string
                 hubClusterID:
                   type: string
                 managerID:
+                  type: string
+                mode:
+                  description: ENUM(prod,qa,staging,dev)
+                  enum:
+                  - prod
+                  - qa
+                  - staging
+                  - dev
                   type: string
                 name:
                   type: string
@@ -111,8 +125,9 @@ spec:
                     - type: string
                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                     x-kubernetes-int-or-string: true
-                  description: Allocatable represents the resources of a node that
-                    are available for scheduling. Defaults to Capacity.
+                  description: |-
+                    Allocatable represents the resources of a node that are available for scheduling.
+                    Defaults to Capacity.
                   type: object
                 capacity:
                   additionalProperties:
@@ -121,8 +136,9 @@ spec:
                     - type: string
                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                     x-kubernetes-int-or-string: true
-                  description: 'Capacity represents the total resources of a node.
-                    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity'
+                  description: |-
+                    Capacity represents the total resources of a node.
+                    More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
                   type: object
                 controlPlane:
                   properties:
@@ -133,8 +149,9 @@ spec:
                         - type: string
                         pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                         x-kubernetes-int-or-string: true
-                      description: Allocatable represents the resources of a node
-                        that are available for scheduling. Defaults to Capacity.
+                      description: |-
+                        Allocatable represents the resources of a node that are available for scheduling.
+                        Defaults to Capacity.
                       type: object
                     capacity:
                       additionalProperties:
@@ -143,8 +160,9 @@ spec:
                         - type: string
                         pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                         x-kubernetes-int-or-string: true
-                      description: 'Capacity represents the total resources of a node.
-                        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity'
+                      description: |-
+                        Capacity represents the total resources of a node.
+                        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
                       type: object
                     count:
                       type: integer
@@ -160,8 +178,9 @@ spec:
                         - type: string
                         pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                         x-kubernetes-int-or-string: true
-                      description: Allocatable represents the resources of a node
-                        that are available for scheduling. Defaults to Capacity.
+                      description: |-
+                        Allocatable represents the resources of a node that are available for scheduling.
+                        Defaults to Capacity.
                       type: object
                     capacity:
                       additionalProperties:
@@ -170,17 +189,18 @@ spec:
                         - type: string
                         pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                         x-kubernetes-int-or-string: true
-                      description: 'Capacity represents the total resources of a node.
-                        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity'
+                      description: |-
+                        Capacity represents the total resources of a node.
+                        More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity
                       type: object
                     count:
                       type: integer
                   type: object
               type: object
             version:
-              description: 'Info contains versioning information. TODO: Add []string
-                of api versions supported? It''s still unclear how we''ll want to
-                distribute that information.'
+              description: |-
+                Info contains versioning information.
+                how we'll want to distribute that information.
               properties:
                 buildDate:
                   type: string

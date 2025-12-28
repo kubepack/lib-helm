@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: ops.kubedb.com
     k8s.io/kind: MySQLOpsRequest
@@ -76,9 +75,17 @@ spec:
               properties:
                 secretRef:
                   properties:
-                    name:
+                    apiGroup:
                       default: ""
                       type: string
+                    kind:
+                      default: Secret
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - kind
+                  - name
                   type: object
                   x-kubernetes-map-type: atomic
               type: object
@@ -110,6 +117,19 @@ spec:
                 member:
                   format: int32
                   type: integer
+              type: object
+            maxRetries:
+              default: 1
+              format: int32
+              type: integer
+            migration:
+              properties:
+                oldPVReclaimPolicy:
+                  type: string
+                storageClassName:
+                  type: string
+              required:
+              - storageClassName
               type: object
             replicationModeTransformation:
               properties:
@@ -345,6 +365,7 @@ spec:
               - ReconfigureTLS
               - RotateAuth
               - ReplicationModeTransformation
+              - StorageMigration
               type: string
             updateVersion:
               properties:

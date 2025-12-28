@@ -88,7 +88,7 @@ func makeTree(t *testing.T) {
 					t.Fatalf("makeTree: %v", err)
 					return
 				}
-				fd.Close()
+				fd.Close() // nolint:errcheck
 			}
 		} else {
 			if err := os.Mkdir(path, 0o770); err != nil {

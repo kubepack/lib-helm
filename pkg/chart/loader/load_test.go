@@ -88,7 +88,7 @@ func TestLoadDirWithSymlink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer os.Remove(link)
+	defer os.Remove(link) // nolint:errcheck
 
 	l, err := Loader("testdata/frobnitz_with_symlink")
 	if err != nil {
@@ -122,7 +122,7 @@ func TestBomTestData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error reading archive frobnitz_with_bom.tgz: %s", err)
 	}
-	defer unzipped.Close()
+	defer unzipped.Close() // nolint:errcheck
 	for _, testFile := range testFiles {
 		data := make([]byte, 3)
 		err := unzipped.Reset(bytes.NewReader(archive))
@@ -386,7 +386,7 @@ icon: https://example.com/64x64.png
 	if err != nil {
 		t.Errorf("Expected good files to be loaded, got %v", err)
 	}
-	err = w.Close()
+	err = w.Close() // nolint:errcheck
 	if err != nil {
 		t.Fatalf("Unable to close writer: %s", err)
 	}
@@ -431,7 +431,7 @@ func TestLoadInvalidArchive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(tmpdir)
+	defer os.RemoveAll(tmpdir) // nolint:errcheck
 
 	writeTar := func(filename, internalPath string, body []byte) {
 		dest, err := os.Create(filename)
@@ -453,9 +453,9 @@ func TestLoadInvalidArchive(t *testing.T) {
 		if _, err := tw.Write(body); err != nil {
 			t.Fatal(err)
 		}
-		tw.Close()
-		zipper.Close()
-		dest.Close()
+		tw.Close()     // nolint:errcheck
+		zipper.Close() // nolint:errcheck
+		dest.Close()   // nolint:errcheck
 	}
 
 	for _, tt := range []struct {

@@ -80,8 +80,8 @@ func TestLoadArchiveFiles(t *testing.T) {
 
 			tc.generate(tw)
 
-			_ = tw.Close()
-			_ = gzw.Close()
+			_ = tw.Close()  // nolint:errcheck
+			_ = gzw.Close() // nolint:errcheck
 
 			files, err := LoadArchiveFiles(buf)
 			tc.check(t, files, err)
