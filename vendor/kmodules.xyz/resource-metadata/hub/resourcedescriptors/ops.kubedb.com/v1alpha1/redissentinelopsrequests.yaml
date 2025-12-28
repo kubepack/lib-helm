@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: ops.kubedb.com
     k8s.io/kind: RedisSentinelOpsRequest
@@ -76,9 +75,17 @@ spec:
               properties:
                 secretRef:
                   properties:
-                    name:
+                    apiGroup:
                       default: ""
                       type: string
+                    kind:
+                      default: Secret
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - kind
+                  - name
                   type: object
                   x-kubernetes-map-type: atomic
               type: object
@@ -111,6 +118,10 @@ spec:
                   format: int32
                   type: integer
               type: object
+            maxRetries:
+              default: 1
+              format: int32
+              type: integer
             restart:
               type: object
             timeout:
@@ -239,42 +250,6 @@ spec:
               type: object
             verticalScaling:
               properties:
-                coordinator:
-                  properties:
-                    resources:
-                      properties:
-                        claims:
-                          items:
-                            properties:
-                              name:
-                                type: string
-                              request:
-                                type: string
-                            required:
-                            - name
-                            type: object
-                          type: array
-                          x-kubernetes-list-map-keys:
-                          - name
-                          x-kubernetes-list-type: map
-                        limits:
-                          additionalProperties:
-                            anyOf:
-                            - type: integer
-                            - type: string
-                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                            x-kubernetes-int-or-string: true
-                          type: object
-                        requests:
-                          additionalProperties:
-                            anyOf:
-                            - type: integer
-                            - type: string
-                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
-                            x-kubernetes-int-or-string: true
-                          type: object
-                      type: object
-                  type: object
                 exporter:
                   properties:
                     resources:

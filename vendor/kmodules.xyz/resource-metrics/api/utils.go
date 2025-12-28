@@ -29,7 +29,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/klog/v2"
 )
 
 func ResourceListForRoles(rr map[PodRole]core.ResourceList, roles []PodRole) core.ResourceList {
@@ -231,7 +230,7 @@ type Container struct {
 }
 
 func AggregateContainerResources(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	aggregate func(x, y core.ResourceList) core.ResourceList,
 	fields ...string,
@@ -240,14 +239,14 @@ func AggregateContainerResources(
 	if !found || err != nil {
 		return nil, err
 	}
-	containers, ok := val.([]interface{})
+	containers, ok := val.([]any)
 	if !ok {
 		return nil, fmt.Errorf("%v accessor error: %v is of the type %T, expected []interface{}", strings.Join(fields, "."), val, val)
 	}
 
 	result := core.ResourceList{}
 	for i := range containers {
-		container, ok := containers[i].(map[string]interface{})
+		container, ok := containers[i].(map[string]any)
 		if !ok {
 			continue
 		}
@@ -263,7 +262,7 @@ func AggregateContainerResources(
 }
 
 func ContainerResources(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	fields ...string,
 ) (core.ResourceList, error) {
@@ -273,7 +272,7 @@ func ContainerResources(
 	}
 
 	var container Container
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]interface{}), &container)
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]any), &container)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse container %#v: %w", container, err)
 	}
@@ -281,7 +280,7 @@ func ContainerResources(
 }
 
 func StorageResources(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	fields ...string,
 ) (core.ResourceList, error) {
@@ -291,7 +290,7 @@ func StorageResources(
 	}
 
 	var storage core.PersistentVolumeClaimSpec
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]interface{}), &storage)
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]any), &storage)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse storage %#v: %w", storage, err)
 	}
@@ -305,7 +304,7 @@ type AppNode struct {
 }
 
 func AppNodeResources(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	fields ...string,
 ) (core.ResourceList, int64, error) {
@@ -315,7 +314,7 @@ func AppNodeResources(
 	}
 
 	var node AppNode
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]interface{}), &node)
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]any), &node)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to parse node %#v: %w", node, err)
 	}
@@ -337,7 +336,7 @@ type AppNodeV2 struct {
 }
 
 func AppNodeResourcesV2(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	containerName string,
 	fields ...string,
@@ -348,7 +347,7 @@ func AppNodeResourcesV2(
 	}
 
 	var node AppNodeV2
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]interface{}), &node)
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]any), &node)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to parse node %#v: %w", node, err)
 	}
@@ -374,7 +373,7 @@ type SidecarNodeV2 struct {
 }
 
 func SidecarNodeResourcesV2(
-	obj map[string]interface{},
+	obj map[string]any,
 	fn func(rr core.ResourceRequirements) core.ResourceList,
 	containerName string,
 	fields ...string,
@@ -387,12 +386,11 @@ func SidecarNodeResourcesV2(
 	var tpl struct {
 		PodTemplate ofstv2.PodTemplateSpec `json:"podTemplate,omitempty"`
 	}
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]interface{}), &tpl)
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(val.(map[string]any), &tpl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse %w", err)
 	}
 
-	klog.Infof("%+v \n\n", tpl)
 	sidecar := GetContainerByName(tpl.PodTemplate.Spec.Containers, containerName)
 	if sidecar == nil {
 		return nil, fmt.Errorf("failed to find container %s in podTemplate spec %v ", containerName, tpl.PodTemplate.Spec)

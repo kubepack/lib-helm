@@ -1,7 +1,6 @@
 apiVersion: ui.k8s.appscode.com/v1alpha1
 kind: ResourceEditor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: meta.k8s.appscode.com
     k8s.io/kind: ResourceManifests
@@ -15,3 +14,12 @@ spec:
     name: resourcemanifests
     scope: Namespaced
     version: v1alpha1
+  ui:
+    editor:
+      name: metak8sappscodecom-resourcemanifests-editor
+      sourceRef:
+        apiGroup: source.toolkit.fluxcd.io
+        kind: HelmRepository
+        name: appscode-charts-oci
+      version: v0.28.0
+    enforceQuota: false

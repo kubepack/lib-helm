@@ -255,7 +255,7 @@ func TestGetClientOpts_registryTLSLoginOption(t *testing.T) {
 				return
 			}
 			if tmpDir != "" {
-				defer os.RemoveAll(tmpDir)
+				defer os.RemoveAll(tmpDir) // nolint:errcheck
 			}
 			if tt.loginOptsN != len(clientOpts.RegLoginOpts) {
 				// we should have a login option but no TLS option

@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: catalog.kubedb.com
     k8s.io/kind: CassandraVersion
@@ -56,6 +55,8 @@ spec:
               required:
               - image
               type: object
+            endOfLife:
+              type: boolean
             exporter:
               properties:
                 image:
@@ -69,6 +70,21 @@ spec:
                   type: string
               required:
               - image
+              type: object
+            medusa:
+              properties:
+                image:
+                  type: string
+                init:
+                  properties:
+                    image:
+                      type: string
+                  required:
+                  - image
+                  type: object
+              required:
+              - image
+              - init
               type: object
             securityContext:
               properties:
@@ -91,12 +107,24 @@ spec:
                 - name
                 type: object
               type: array
+            updateConstraints:
+              properties:
+                allowlist:
+                  items:
+                    type: string
+                  type: array
+                denylist:
+                  items:
+                    type: string
+                  type: array
+              type: object
             version:
               type: string
           required:
           - db
           - exporter
           - initContainer
+          - medusa
           - version
           type: object
       type: object

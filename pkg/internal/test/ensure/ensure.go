@@ -27,11 +27,11 @@ import (
 func HelmHome(t *testing.T) func() {
 	t.Helper()
 	base := TempDir(t)
-	os.Setenv(xdg.CacheHomeEnvVar, base)
-	os.Setenv(xdg.ConfigHomeEnvVar, base)
-	os.Setenv(xdg.DataHomeEnvVar, base)
+	_ = os.Setenv(xdg.CacheHomeEnvVar, base)
+	_ = os.Setenv(xdg.ConfigHomeEnvVar, base)
+	_ = os.Setenv(xdg.DataHomeEnvVar, base)
 	return func() {
-		os.RemoveAll(base)
+		_ = os.RemoveAll(base)
 	}
 }
 

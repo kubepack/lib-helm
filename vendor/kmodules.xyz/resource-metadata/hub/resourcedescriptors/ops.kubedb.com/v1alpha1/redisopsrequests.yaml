@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: ops.kubedb.com
     k8s.io/kind: RedisOpsRequest
@@ -66,6 +65,24 @@ spec:
           type: object
         spec:
           properties:
+            announce:
+              properties:
+                shards:
+                  items:
+                    properties:
+                      endpoints:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  type: array
+                type:
+                  default: hostname
+                  enum:
+                  - ip
+                  - hostname
+                  type: string
+              type: object
             apply:
               default: IfReady
               enum:
@@ -76,9 +93,17 @@ spec:
               properties:
                 secretRef:
                   properties:
-                    name:
+                    apiGroup:
                       default: ""
                       type: string
+                    kind:
+                      default: Secret
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - kind
+                  - name
                   type: object
                   x-kubernetes-map-type: atomic
               type: object
@@ -87,6 +112,24 @@ spec:
                 applyConfig:
                   additionalProperties:
                     type: string
+                  type: object
+                auth:
+                  properties:
+                    deleteUsers:
+                      items:
+                        type: string
+                      type: array
+                    secretRef:
+                      properties:
+                        name:
+                          default: ""
+                          type: string
+                      type: object
+                      x-kubernetes-map-type: atomic
+                    syncACL:
+                      items:
+                        type: string
+                      type: array
                   type: object
                 configSecret:
                   properties:
@@ -107,6 +150,24 @@ spec:
               x-kubernetes-map-type: atomic
             horizontalScaling:
               properties:
+                announce:
+                  properties:
+                    shards:
+                      items:
+                        properties:
+                          endpoints:
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      type: array
+                    type:
+                      default: hostname
+                      enum:
+                      - ip
+                      - hostname
+                      type: string
+                  type: object
                 replicas:
                   format: int32
                   type: integer
@@ -114,6 +175,10 @@ spec:
                   format: int32
                   type: integer
               type: object
+            maxRetries:
+              default: 1
+              format: int32
+              type: integer
             restart:
               type: object
             sentinel:
@@ -262,6 +327,7 @@ spec:
               - ReconfigureTLS
               - ReplaceSentinel
               - RotateAuth
+              - Announce
               type: string
             updateVersion:
               properties:

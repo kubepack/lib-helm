@@ -35,7 +35,7 @@ func UninstallRelease(getter genericclioptions.RESTClientGetter, name string, na
 	return err
 }
 
-func debug(format string, v ...interface{}) {
+func debug(format string, v ...any) {
 	format = fmt.Sprintf("[debug] %s\n", format)
 	_ = log.Output(2, fmt.Sprintf(format, v...))
 }

@@ -1,7 +1,6 @@
 apiVersion: ui.k8s.appscode.com/v1alpha1
 kind: ResourceEditor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: kubedb.com
     k8s.io/kind: Etcd
@@ -9,6 +8,11 @@ metadata:
     k8s.io/version: v1alpha2
   name: kubedb.com-v1alpha2-etcds
 spec:
+  icons:
+  - src: https://cdn.appscode.com/k8s/icons/kubedb.com/etcds.svg
+    type: image/svg+xml
+  - src: https://cdn.appscode.com/k8s/icons/kubedb.com/etcds.png
+    type: image/png
   resource:
     group: kubedb.com
     kind: Etcd
@@ -22,5 +26,5 @@ spec:
         apiGroup: source.toolkit.fluxcd.io
         kind: HelmRepository
         name: appscode-charts-oci
-      version: v0.14.0
+      version: v0.28.0
     enforceQuota: false

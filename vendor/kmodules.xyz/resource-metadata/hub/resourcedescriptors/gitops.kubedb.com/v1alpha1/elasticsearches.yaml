@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: gitops.kubedb.com
     k8s.io/kind: Elasticsearch
@@ -63,16 +62,22 @@ spec:
                   format: date-time
                   type: string
                 apiGroup:
+                  default: ""
                   type: string
                 externallyManaged:
                   type: boolean
+                kind:
+                  default: Secret
+                  type: string
                 name:
-                  default: ""
                   type: string
                 rotateAfter:
                   type: string
                 secretStoreName:
                   type: string
+              required:
+              - kind
+              - name
               type: object
               x-kubernetes-map-type: atomic
             autoOps:

@@ -68,7 +68,7 @@ spec:
                       Claims lists the names of resources, defined in spec.resourceClaims,
                       that are used by this container.
 
-                      This is an alpha field and requires enabling the
+                      This field depends on the
                       DynamicResourceAllocation feature gate.
 
                       This field is immutable. It can only be set for containers.
@@ -125,11 +125,21 @@ spec:
                     type: string
                   caBundle:
                     type: string
+                  cloudServiceAuthMode:
+                    type: string
                   displayName:
                     type: string
                   hubClusterID:
                     type: string
                   managerID:
+                    type: string
+                  mode:
+                    description: ENUM(prod,qa,staging,dev)
+                    enum:
+                    - prod
+                    - qa
+                    - staging
+                    - dev
                     type: string
                   name:
                     type: string
@@ -166,7 +176,7 @@ spec:
                       Claims lists the names of resources, defined in spec.resourceClaims,
                       that are used by this container.
 
-                      This is an alpha field and requires enabling the
+                      This field depends on the
                       DynamicResourceAllocation feature gate.
 
                       This field is immutable. It can only be set for containers.

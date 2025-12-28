@@ -30,8 +30,8 @@ var updateGolden = flag.Bool("update", false, "update golden files")
 
 // TestingT describes a testing object compatible with the critical functions from the testing.T type
 type TestingT interface {
-	Fatal(...interface{})
-	Fatalf(string, ...interface{})
+	Fatal(...any)
+	Fatalf(string, ...any)
 	HelperT
 }
 
@@ -99,5 +99,5 @@ func update(filename string, in []byte) error {
 }
 
 func normalize(in []byte) []byte {
-	return bytes.Replace(in, []byte("\r\n"), []byte("\n"), -1)
+	return bytes.ReplaceAll(in, []byte("\r\n"), []byte("\n"))
 }

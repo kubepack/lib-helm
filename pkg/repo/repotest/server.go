@@ -145,7 +145,7 @@ func (s *Server) Start() {
 //
 // It should be called explicitly.
 func (s *Server) Stop() {
-	s.srv.Close()
+	s.srv.Close() // nolint:errcheck
 }
 
 // URL returns the URL of the server.

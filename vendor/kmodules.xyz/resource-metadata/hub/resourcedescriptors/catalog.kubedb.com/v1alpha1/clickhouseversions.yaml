@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: catalog.kubedb.com
     k8s.io/kind: ClickHouseVersion
@@ -63,6 +62,8 @@ spec:
               required:
               - image
               type: object
+            endOfLife:
+              type: boolean
             initContainer:
               properties:
                 image:
@@ -91,6 +92,17 @@ spec:
                 - name
                 type: object
               type: array
+            updateConstraints:
+              properties:
+                allowlist:
+                  items:
+                    type: string
+                  type: array
+                denylist:
+                  items:
+                    type: string
+                  type: array
+              type: object
             version:
               type: string
           required:

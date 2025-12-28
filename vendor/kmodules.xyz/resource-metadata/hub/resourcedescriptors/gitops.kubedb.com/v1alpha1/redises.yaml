@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: gitops.kubedb.com
     k8s.io/kind: Redis
@@ -57,6 +56,20 @@ spec:
           type: object
         spec:
           properties:
+            acl:
+              properties:
+                rules:
+                  items:
+                    type: string
+                  type: array
+                secretRef:
+                  properties:
+                    name:
+                      default: ""
+                      type: string
+                  type: object
+                  x-kubernetes-map-type: atomic
+              type: object
             allowedSchemas:
               default:
                 namespaces:
@@ -133,16 +146,22 @@ spec:
                   format: date-time
                   type: string
                 apiGroup:
+                  default: ""
                   type: string
                 externallyManaged:
                   type: boolean
+                kind:
+                  default: Secret
+                  type: string
                 name:
-                  default: ""
                   type: string
                 rotateAfter:
                   type: string
                 secretStoreName:
                   type: string
+              required:
+              - kind
+              - name
               type: object
               x-kubernetes-map-type: atomic
             autoOps:
@@ -152,6 +171,24 @@ spec:
               type: object
             cluster:
               properties:
+                announce:
+                  properties:
+                    shards:
+                      items:
+                        properties:
+                          endpoints:
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      type: array
+                    type:
+                      default: hostname
+                      enum:
+                      - ip
+                      - hostname
+                      type: string
+                  type: object
                 replicas:
                   format: int32
                   type: integer

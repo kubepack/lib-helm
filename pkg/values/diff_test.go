@@ -10,8 +10,8 @@ import (
 // https://helm.sh/docs/intro/using_helm/#the-format-and-limitations-of---set
 func TestGetChangedValues(t *testing.T) {
 	type args struct {
-		original map[string]interface{}
-		modified map[string]interface{}
+		original map[string]any
+		modified map[string]any
 	}
 	tests := []struct {
 		name    string
@@ -22,10 +22,10 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "single key of simple value",
 			args: args{
-				original: map[string]interface{}{
+				original: map[string]any{
 					"name": "v1",
 				},
-				modified: map[string]interface{}{
+				modified: map[string]any{
 					"name": "v2",
 				},
 			},
@@ -36,11 +36,11 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "multi key of simple value",
 			args: args{
-				original: map[string]interface{}{
+				original: map[string]any{
 					"a": "b1",
 					"c": "d1",
 				},
-				modified: map[string]interface{}{
+				modified: map[string]any{
 					"a": "b2",
 					"c": "d2",
 				},
@@ -53,11 +53,11 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "nested object",
 			args: args{
-				original: map[string]interface{}{
-					"outer": map[string]interface{}{},
+				original: map[string]any{
+					"outer": map[string]any{},
 				},
-				modified: map[string]interface{}{
-					"outer": map[string]interface{}{
+				modified: map[string]any{
+					"outer": map[string]any{
 						"inner": "value",
 					},
 				},
@@ -69,11 +69,11 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "simple array",
 			args: args{
-				original: map[string]interface{}{
-					"name": []interface{}{},
+				original: map[string]any{
+					"name": []any{},
 				},
-				modified: map[string]interface{}{
-					"name": []interface{}{"a", "b", "c"},
+				modified: map[string]any{
+					"name": []any{"a", "b", "c"},
 				},
 			},
 			want: []string{
@@ -83,16 +83,16 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "nested array",
 			args: args{
-				original: map[string]interface{}{
-					"servers": []interface{}{},
+				original: map[string]any{
+					"servers": []any{},
 				},
-				modified: map[string]interface{}{
-					"servers": []interface{}{
-						map[string]interface{}{
-							"port": []interface{}{
+				modified: map[string]any{
+					"servers": []any{
+						map[string]any{
+							"port": []any{
 								80,
 							},
-							"host": []interface{}{
+							"host": []any{
 								"example",
 							},
 							"name": "nginx",
@@ -109,15 +109,15 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "array of single key object",
 			args: args{
-				original: map[string]interface{}{
-					"servers": []interface{}{},
+				original: map[string]any{
+					"servers": []any{},
 				},
-				modified: map[string]interface{}{
-					"servers": []interface{}{
-						map[string]interface{}{
+				modified: map[string]any{
+					"servers": []any{
+						map[string]any{
 							"port": 80,
 						},
-						map[string]interface{}{
+						map[string]any{
 							"port": 443,
 						},
 					},
@@ -131,16 +131,16 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "array of multi key object",
 			args: args{
-				original: map[string]interface{}{
-					"servers": []interface{}{},
+				original: map[string]any{
+					"servers": []any{},
 				},
-				modified: map[string]interface{}{
-					"servers": []interface{}{
-						map[string]interface{}{
+				modified: map[string]any{
+					"servers": []any{
+						map[string]any{
 							"port": 80,
 							"name": "http",
 						},
-						map[string]interface{}{
+						map[string]any{
 							"port": 443,
 							"name": "https",
 						},
@@ -157,10 +157,10 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "escape value",
 			args: args{
-				original: map[string]interface{}{
+				original: map[string]any{
 					"name": "",
 				},
-				modified: map[string]interface{}{
+				modified: map[string]any{
 					"name": "value1,value2",
 				},
 			},
@@ -171,11 +171,11 @@ func TestGetChangedValues(t *testing.T) {
 		{
 			name: "escape key",
 			args: args{
-				original: map[string]interface{}{
-					"nodeSelector": map[string]interface{}{},
+				original: map[string]any{
+					"nodeSelector": map[string]any{},
 				},
-				modified: map[string]interface{}{
-					"nodeSelector": map[string]interface{}{
+				modified: map[string]any{
+					"nodeSelector": map[string]any{
 						"kubernetes.io/role": "master",
 					},
 				},

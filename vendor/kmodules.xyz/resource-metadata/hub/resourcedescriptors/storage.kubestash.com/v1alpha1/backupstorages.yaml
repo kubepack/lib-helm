@@ -1,7 +1,6 @@
 apiVersion: meta.k8s.appscode.com/v1alpha1
 kind: ResourceDescriptor
 metadata:
-  creationTimestamp: null
   labels:
     k8s.io/group: storage.kubestash.com
     k8s.io/kind: BackupStorage
@@ -1706,6 +1705,9 @@ spec:
                       - lun
                       - targetPortal
                       type: object
+                    maxConnections:
+                      format: int64
+                      type: integer
                     mountPath:
                       type: string
                     nfs:
@@ -2059,6 +2061,9 @@ spec:
                       type: string
                     insecureTLS:
                       type: boolean
+                    maxConnections:
+                      format: int64
+                      type: integer
                     prefix:
                       type: string
                     region:
