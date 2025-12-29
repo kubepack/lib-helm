@@ -1,8 +1,6 @@
 module kubepack.dev/lib-helm
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
@@ -10,11 +8,11 @@ require (
 	github.com/alessio/shellescape v1.4.2
 	github.com/docker/cli v28.2.2+incompatible
 	github.com/evanphx/json-patch v5.9.11+incompatible
-	github.com/fluxcd/helm-controller/api v1.2.0
-	github.com/fluxcd/pkg/apis/meta v1.10.0
+	github.com/fluxcd/helm-controller/api v1.4.5
+	github.com/fluxcd/pkg/apis/meta v1.23.0
 	github.com/fluxcd/pkg/oci v0.45.0
 	github.com/fluxcd/pkg/version v0.6.0
-	github.com/fluxcd/source-controller/api v1.5.0
+	github.com/fluxcd/source-controller/api v1.7.4
 	github.com/gabriel-vasile/mimetype v1.4.11
 	github.com/gobuffalo/flect v1.0.3
 	github.com/google/go-containerregistry v0.20.6
@@ -91,8 +89,8 @@ require (
 	github.com/fatih/camelcase v1.0.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
-	github.com/fluxcd/pkg/apis/acl v0.6.0 // indirect
-	github.com/fluxcd/pkg/apis/kustomize v1.9.0 // indirect
+	github.com/fluxcd/pkg/apis/acl v0.9.0 // indirect
+	github.com/fluxcd/pkg/apis/kustomize v1.14.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
