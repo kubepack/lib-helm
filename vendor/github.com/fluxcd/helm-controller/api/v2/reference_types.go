@@ -50,7 +50,7 @@ type CrossNamespaceSourceReference struct {
 	APIVersion string `json:"apiVersion,omitempty"`
 
 	// Kind of the referent.
-	// +kubebuilder:validation:Enum=OCIRepository;HelmChart
+	// +kubebuilder:validation:Enum=OCIRepository;HelmChart;ExternalArtifact
 	// +required
 	Kind string `json:"kind"`
 
@@ -67,4 +67,24 @@ type CrossNamespaceSourceReference struct {
 	// +kubebuilder:validation:Optional
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
+}
+
+// DependencyReference defines a HelmRelease dependency on another HelmRelease resource.
+type DependencyReference struct {
+	// Name of the referent.
+	// +required
+	Name string `json:"name"`
+
+	// Namespace of the referent, defaults to the namespace of the HelmRelease
+	// resource object that contains the reference.
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// ReadyExpr is a CEL expression that can be used to assess the readiness
+	// of a dependency. When specified, the built-in readiness check
+	// is replaced by the logic defined in the CEL expression.
+	// To make the CEL expression additive to the built-in readiness check,
+	// the feature gate `AdditiveCELDependencyCheck` must be set to `true`.
+	// +optional
+	ReadyExpr string `json:"readyExpr,omitempty"`
 }

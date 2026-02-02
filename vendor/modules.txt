@@ -274,17 +274,17 @@ github.com/fatih/color
 # github.com/fatih/structs v1.1.0
 ## explicit
 github.com/fatih/structs
-# github.com/fluxcd/helm-controller/api v1.2.0
-## explicit; go 1.23.0
+# github.com/fluxcd/helm-controller/api v1.4.5
+## explicit; go 1.25.0
 github.com/fluxcd/helm-controller/api/v2
-# github.com/fluxcd/pkg/apis/acl v0.6.0
-## explicit; go 1.23.0
+# github.com/fluxcd/pkg/apis/acl v0.9.0
+## explicit; go 1.25.0
 github.com/fluxcd/pkg/apis/acl
-# github.com/fluxcd/pkg/apis/kustomize v1.9.0
-## explicit; go 1.23.0
+# github.com/fluxcd/pkg/apis/kustomize v1.14.0
+## explicit; go 1.25.0
 github.com/fluxcd/pkg/apis/kustomize
-# github.com/fluxcd/pkg/apis/meta v1.10.0
-## explicit; go 1.23.0
+# github.com/fluxcd/pkg/apis/meta v1.23.0
+## explicit; go 1.25.0
 github.com/fluxcd/pkg/apis/meta
 # github.com/fluxcd/pkg/oci v0.45.0
 ## explicit; go 1.23.0
@@ -296,8 +296,8 @@ github.com/fluxcd/pkg/oci/auth/login
 # github.com/fluxcd/pkg/version v0.6.0
 ## explicit; go 1.23.0
 github.com/fluxcd/pkg/version
-# github.com/fluxcd/source-controller/api v1.5.0
-## explicit; go 1.23.0
+# github.com/fluxcd/source-controller/api v1.7.4
+## explicit; go 1.25.0
 github.com/fluxcd/source-controller/api/v1
 github.com/fluxcd/source-controller/api/v1beta2
 # github.com/fsnotify/fsnotify v1.9.0
