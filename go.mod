@@ -2,8 +2,6 @@ module kubepack.dev/lib-helm
 
 go 1.24.0
 
-toolchain go1.24.1
-
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/PuerkitoBio/purell v1.2.1
@@ -27,7 +25,7 @@ require (
 	golang.org/x/net v0.47.0
 	gomodules.xyz/encoding v0.0.8
 	gomodules.xyz/sets v0.2.1
-	helm.sh/helm/v3 v3.19.4
+	helm.sh/helm/v3 v3.19.5
 	k8s.io/api v0.34.3
 	k8s.io/apiextensions-apiserver v0.34.3
 	k8s.io/apimachinery v0.34.3
@@ -206,4 +204,4 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 )
 
-replace helm.sh/helm/v3 => github.com/x-helm/helm/v3 v3.19.5-0.20251227115143-3b9f6f6b7797
+replace helm.sh/helm/v3 => github.com/x-helm/helm/v3 v3.19.6-0.20260202105327-2ee7e55d99cc
