@@ -83,7 +83,8 @@ func (r *ChartRepository) DownloadIndexFile() (*bytes.Reader, error) {
 
 	indexURL := parsedURL.String()
 	// TODO add user-agent
-	return r.Client.Get(indexURL,
+	return r.Client.Get(
+		indexURL,
 		getter.WithURL(r.Config.URL),
 		getter.WithTLSClientConfig(r.Config.CertFile, r.Config.KeyFile, r.Config.CAFile),
 		getter.WithBasicAuth(r.Config.Username, r.Config.Password),
