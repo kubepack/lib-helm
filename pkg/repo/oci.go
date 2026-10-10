@@ -109,7 +109,8 @@ func (r *Registry) getFluxChart(obj releasesapi.ChartSourceRef) (*ChartExtended,
 
 		// Tell the chart repository to use the OCI client with the configured getter
 		getterOpts = append(getterOpts, helmgetter.WithRegistryClient(registryClient))
-		ociChartRepo, err := repository.NewOCIChartRepository(normalizedURL,
+		ociChartRepo, err := repository.NewOCIChartRepository(
+			normalizedURL,
 			repository.WithOCIGetter(getters),
 			repository.WithOCIGetterOptions(getterOpts),
 			repository.WithOCIRegistryClient(registryClient),
