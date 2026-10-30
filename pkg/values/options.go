@@ -94,6 +94,10 @@ func (opts *Options) MergeValues(chrt *chart.Chart) (map[string]any, error) {
 	if err := yaml.Unmarshal(baseFile.Data, &base); err != nil {
 		return nil, errors.Wrapf(err, "failed to parse %s", opts.ValuesFile)
 	}
+	defaults := map[string]any{}
+	if err := yaml.Unmarshal(baseFile.Data, &defaults); err != nil {
+		return nil, errors.Wrapf(err, "failed to parse %s", opts.ValuesFile)
+	}
 
 	// User specified a values files via -f/--values
 	for _, bytes := range opts.ValueBytes {
@@ -127,7 +131,32 @@ func (opts *Options) MergeValues(chrt *chart.Chart) (map[string]any, error) {
 		}
 	}
 
+	// Callers blank chart.Values before handing these to Helm, so Helm's own
+	// coalesce never sees the defaults and can't drop null overrides; do it here
+	// to keep `key=null` deleting a chart default as it does with the helm CLI.
+	deleteNullOverrides(base, defaults)
+
 	return base, nil
+}
+
+func deleteNullOverrides(vals, defaults map[string]any) {
+	for k, v := range vals {
+		dv, ok := defaults[k]
+		if !ok {
+			continue
+		}
+		if v == nil {
+			delete(vals, k)
+			continue
+		}
+		vm, ok := v.(map[string]any)
+		if !ok {
+			continue
+		}
+		if dm, ok := dv.(map[string]any); ok {
+			deleteNullOverrides(vm, dm)
+		}
+	}
 }
 
 func MergeMaps(a, b map[string]any) map[string]any {
